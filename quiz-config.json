@@ -1,0 +1,120 @@
+{
+    "etapas": [
+        {
+            "chave": "nome_crianca",
+            "id": "step_nome",
+            "placeholder": "Ex: Mateo",
+            "subtitle": "Digite o primeiro nome da crian\u00e7a",
+            "tipo": "texto",
+            "title": "Quem \u00e9 a estrela do livro?"
+        },
+        {
+            "chave": "genero",
+            "id": "step_genero",
+            "opcoes": [
+                {
+                    "icone": "\ud83d\udc66",
+                    "imagem": "",
+                    "label": "Menino",
+                    "valor": "menino"
+                },
+                {
+                    "icone": "\ud83d\udc67",
+                    "imagem": "",
+                    "label": "Menina",
+                    "valor": "menina"
+                }
+            ],
+            "subtitle": "Para personalizarmos a hist\u00f3ria",
+            "tipo": "cards",
+            "title": "Qual o g\u00eanero da crian\u00e7a?"
+        },
+        {
+            "chave": "pele",
+            "id": "step_pele",
+            "opcoes": [
+                {
+                    "cor": "#FDDFB2",
+                    "imagem": "",
+                    "label": "Clara",
+                    "valor": "clara"
+                },
+                {
+                    "cor": "#C68642",
+                    "imagem": "",
+                    "label": "Morena",
+                    "valor": "morena"
+                },
+                {
+                    "cor": "#63381B",
+                    "imagem": "",
+                    "label": "Negra",
+                    "valor": "negra"
+                }
+            ],
+            "subtitle": "Selecione o tom correspondente",
+            "tipo": "cards",
+            "title": "Tom de pele do personagem"
+        },
+        {
+            "chave": "cabelo",
+            "id": "step_cabelo",
+            "opcoes": [
+                {
+                    "cor": "#4A2810",
+                    "imagem": "",
+                    "label": "Castanho",
+                    "valor": "castanho"
+                },
+                {
+                    "cor": "#1A1A1A",
+                    "imagem": "",
+                    "label": "Preto",
+                    "valor": "preto"
+                },
+                {
+                    "cor": "#E2B258",
+                    "imagem": "",
+                    "label": "Loiro",
+                    "valor": "loiro"
+                },
+                {
+                    "cor": "#B54213",
+                    "imagem": "",
+                    "label": "Ruivo",
+                    "valor": "ruivo"
+                }
+            ],
+            "subtitle": "Como s\u00e3o as madeixas?",
+            "tipo": "cards",
+            "title": "Cor do cabelinho"
+        },
+        {
+            "chave": "tema",
+            "id": "step_tema",
+            "opcoes": [
+                {
+                    "icone": "\ud83e\udd95",
+                    "imagem": "",
+                    "label": "Dinossauros",
+                    "valor": "dinossauros"
+                },
+                {
+                    "icone": "\ud83d\ude80",
+                    "imagem": "",
+                    "label": "Astronauta",
+                    "valor": "astronauta"
+                }
+            ],
+            "subtitle": "Escolha o mundo m\u00e1gico",
+            "tipo": "cards",
+            "title": "Qual o universo da hist\u00f3ria?"
+        }
+    ],
+    "landing_page": {
+        "banner_aviso": "\ud83c\udf84 Edi\u00e7\u00e3o Especial de Natal",
+        "capa_imagem_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&auto=format&fit=crop&q=80",
+        "descricao": "Crie um livro ilustrado personalizado com o nome, o jeitinho e a apar\u00eancia de quem voc\u00ea ama \u2014 filho(a), neto(a), sobrinho(a) ou afilhado(a).",
+        "headline": "O presente que vira <span class=\"highlight\">a hist\u00f3ria favorita</span> de uma crian\u00e7a"
+    }
+}

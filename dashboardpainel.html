@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Funil UTMify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #0B0F19; color: #F1F5F9; padding: 24px; min-height: 100vh; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1E293B; padding-bottom: 20px; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
+    .title { font-size: 20px; font-weight: 800; color: #FFF; }
+    .btn { background: #1E293B; color: #FFF; border: 1px solid #334155; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .btn:hover { background: #3B82F6; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .kpi-card { background: #131B2E; border: 1px solid #1E293B; border-radius: 16px; padding: 18px; }
+    .kpi-label { font-size: 11px; text-transform: uppercase; color: #94A3B8; font-weight: 700; margin-bottom: 8px; }
+    .kpi-value { font-size: 24px; font-weight: 800; color: #FFF; }
+    .kpi-sub { font-size: 12px; color: #10B981; margin-top: 4px; }
+    .funnel-container { background: #131B2E; border: 1px solid #1E293B; border-radius: 18px; padding: 24px; }
+    .funnel-horizontal { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 12px; }
+    .funnel-step { flex: 1; min-width: 140px; background: #1E293B; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+    .funnel-step-name { font-size: 12px; font-weight: 600; color: #94A3B8; margin-bottom: 10px; }
+    .funnel-step-num { font-size: 20px; font-weight: 800; color: #FFF; }
+    .funnel-step-pct { font-size: 13px; font-weight: 700; color: #38BDF8; margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="title">Métricas em Tempo Real (UTMify)</div>
+      <div style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Puxando direto da sua Planilha Google</div>
+      <div style="font-size: 12px; color: #38BDF8; margin-top: 6px;">Atenção: este painel só mostra dados da planilha depois que a URL do Apps Script estiver preenchida abaixo. O painel principal com editor continua em painel-gestao-k892.html.</div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn" onclick="carregarDadosNuvem()">Atualizar Dados ⟳</button>
+      <a href="index.html" class="btn" style="background:#10B981; border:none;">Ver Loja ↗</a>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Faturamento Pago</div>
+      <div class="kpi-value" id="kpiFaturamento">R$ 0,00</div>
+      <div class="kpi-sub" id="kpiTicket">Ticket Médio: R$ 0,00</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversão Visitante → Pago</div>
+      <div class="kpi-value" id="kpiConversao">0,0%</div>
+      <div class="kpi-sub" id="kpiVendas">0 pedidos pagos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Adesão Order Bump</div>
+      <div class="kpi-value" id="kpiBump">0,0%</div>
+      <div class="kpi-sub" id="kpiBumpCont">0 adicionados</div>
+    </div>
+  </div>
+
+  <div class="funnel-container">
+    <div style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">Funil Horizontal de Conversão</div>
+    <div class="funnel-horizontal" id="funnelBars"></div>
+  </div>
+
+<script>
+  const APPS_SCRIPT_URL = "";
+
+  async function carregarDadosNuvem() {
+    if (!APPS_SCRIPT_URL) return;
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL);
+      const data = await res.json();
+
+      const metricas = data.metricas || [];
+      const pedidos = data.pedidos || [];
+
+      const visitasLP = metricas.filter(m => m.evento === "visita_lp").length;
+      const iniciouQuiz = metricas.filter(m => m.evento === "inicio_quiz").length;
+      const checkout = metricas.filter(m => m.evento === "chegou_checkout").length;
+      const tentativas = metricas.filter(m => m.evento === "tentativa_pagamento").length;
+
+      const pagos = pedidos.filter(p => p.status === "Pago");
+      let faturamento = 0;
+      let bumps = 0;
+
+      pagos.forEach(p => {
+        let val = 37;
+        if (typeof p.total === "number") val = p.total;
+        else if (p.total) {
+          const parsed = parseFloat(String(p.total).replace(/[^0-9,-]+/g, "").replace(",", "."));
+          if (!isNaN(parsed)) val = parsed;
+        }
+        faturamento += val;
+        if (p.bump === "Sim") bumps++;
+      });
+
+      document.getElementById("kpiFaturamento").innerText = `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
+      document.getElementById("kpiVendas").innerText = `${pagos.length} pedidos pagos`;
+      document.getElementById("kpiTicket").innerText = `Ticket Médio: R$ ${(pagos.length ? (faturamento / pagos.length) : 0).toFixed(2).replace('.', ',')}`;
+      document.getElementById("kpiConversao").innerText = `${(visitasLP ? ((pagos.length / visitasLP) * 100) : 0).toFixed(1)}%`;
+      document.getElementById("kpiBump").innerText = `${(pagos.length ? ((bumps / pagos.length) * 100) : 0).toFixed(1)}%`;
+      document.getElementById("kpiBumpCont").innerText = `${bumps} de ${pagos.length} pedidos`;
+
+      const steps = [
+        { nome: "1. Visitas LP", count: visitasLP },
+        { nome: "2. Iniciou Quiz", count: iniciouQuiz },
+        { nome: "3. Chegou Checkout", count: checkout },
+        { nome: "4. Tentativas", count: tentativas },
+        { nome: "5. Pagos", count: pagos.length }
+      ];
+
+      const wrapper = document.getElementById("funnelBars");
+      wrapper.innerHTML = "";
+      const base = visitasLP || 1;
+
+      steps.forEach(s => {
+        const div = document.createElement("div");
+        div.className = "funnel-step";
+        div.innerHTML = `
+          <div class="funnel-step-name">${s.nome}</div>
+          <div class="funnel-step-num">${s.count}</div>
+          <div class="funnel-step-pct">${((s.count / base) * 100).toFixed(1)}%</div>
+        `;
+        wrapper.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("Erro ao carregar métricas da planilha:", e);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", carregarDadosNuvem);
+</script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Gestão - Métricas & Editor Visual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #0B0F19; color: #F1F5F9; padding: 20px 16px; min-height: 100vh; }
+
+    /* Topo e Controles */
+    .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1E293B; padding-bottom: 18px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .admin-title { font-size: 20px; font-weight: 800; color: #FFF; }
+    .admin-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%; }
+
+    .btn-admin { background: #1E293B; color: #FFF; border: 1px solid #334155; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-admin.active, .btn-admin:hover { background: #3B82F6; border-color: #3B82F6; }
+    .btn-admin-site { background: #10B981; border-color: #10B981; text-decoration: none; display: inline-flex; align-items: center; }
+
+    /* KPIs */
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+    @media(min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+    .kpi-card { background: #131B2E; border: 1px solid #1E293B; border-radius: 14px; padding: 14px; }
+    .kpi-label { font-size: 11px; text-transform: uppercase; color: #94A3B8; font-weight: 700; margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: #FFF; }
+    .kpi-sub { font-size: 11px; color: #10B981; margin-top: 4px; }
+
+    /* Funil Horizontal */
+    .funnel-container { background: #131B2E; border: 1px solid #1E293B; border-radius: 16px; padding: 18px; margin-bottom: 24px; }
+    .funnel-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; flex-direction: column; gap: 4px; }
+    .funnel-horizontal { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; align-items: stretch; }
+    .funnel-step { flex: 1; min-width: 130px; background: #1E293B; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    .funnel-step-name { font-size: 12px; font-weight: 600; color: #94A3B8; margin-bottom: 8px; }
+    .funnel-step-num { font-size: 18px; font-weight: 800; color: #FFF; }
+    .funnel-step-pct { font-size: 13px; font-weight: 700; color: #38BDF8; margin-top: 4px; }
+    .funnel-drop-badge { font-size: 10px; color: #F87171; background: rgba(239, 68, 68, 0.15); padding: 2px 6px; border-radius: 6px; margin-top: 4px; width: fit-content; }
+    .funnel-svg { width: 100%; height: auto; display: block; }
+    .funnel-legend { display: grid; gap: 8px; margin-top: 14px; }
+    .funnel-legend-row { display: flex; justify-content: space-between; gap: 12px; background: #0B0F19; border: 1px solid #1E293B; border-radius: 10px; padding: 10px 12px; font-size: 12px; }
+    .funnel-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+
+    /* CMS Principal */
+    .cms-container { background: #131B2E; border: 1px solid #1E293B; border-radius: 16px; padding: 18px; margin-bottom: 24px; }
+    input[type="text"] { width: 100%; padding: 10px 12px; background: #0B0F19; border: 1px solid #334155; border-radius: 10px; color: #FFF; outline: none; margin-top: 4px; font-size: 13px; }
+    input[type="text"]:focus { border-color: #38BDF8; }
+
+    /* Lista Visual de Etapas */
+    .etapas-visual-list { display: grid; gap: 14px; margin-top: 14px; }
+    .etapa-card-row { background: #1E293B; border: 1px solid #334155; border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .etapa-info h4 { font-size: 15px; font-weight: 700; color: #FFF; margin-bottom: 4px; }
+    .etapa-info p { font-size: 12px; color: #94A3B8; }
+    .etapa-actions { display: flex; gap: 8px; }
+    .btn-edit-vis { background: #3B82F6; color: #FFF; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .btn-del-step { background: #EF4444; color: #FFF; border: none; padding: 8px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+
+    /* MODAL DE EDIÇÃO VISUAL DO QUIZ */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 999999; justify-content: center; align-items: center; padding: 16px; }
+    .modal-content { background: #131B2E; border: 1px solid #334155; width: 100%; max-width: 500px; max-height: 90vh; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid #1E293B; display: flex; justify-content: space-between; align-items: center; }
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid #1E293B; display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* Prévia de Cards dentro do Editor Visual */
+    .preview-box { background: #0B0F19; border: 1px dashed #334155; border-radius: 16px; padding: 16px; margin: 16px 0; }
+    .preview-header-quiz { text-align: center; margin-bottom: 16px; }
+    .preview-cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    .editor-card-item { background: #1E293B; border: 2px solid #334155; border-radius: 12px; padding: 12px; text-align: center; position: relative; }
+    .editor-card-thumb { width: 54px; height: 54px; object-fit: cover; border-radius: 10px; margin: 0 auto 6px; display: block; background: #334155; }
+    .editor-color-swatch { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 6px; }
+    .editor-card-inputs { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .editor-card-inputs input { padding: 6px 8px; font-size: 11px; }
+    .btn-remove-opt { background: #EF4444; color: #FFF; border: none; font-size: 10px; padding: 4px; border-radius: 4px; margin-top: 6px; cursor: pointer; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-header">
+    <div>
+      <div class="admin-title">Painel de Gestão & Editor Visual</div>
+      <div style="font-size: 12px; color: #94A3B8; margin-top: 2px;">Rastreamento UTMify & CMS Interativo</div>
+    </div>
+    <div class="admin-controls">
+      <button class="btn-admin active" onclick="filtrarPeriodo('hoje', this)">Hoje</button>
+      <button class="btn-admin" onclick="filtrarPeriodo('ontem', this)">Ontem</button>
+      <button class="btn-admin" onclick="filtrarPeriodo('7d', this)">7 dias</button>
+      <button class="btn-admin" onclick="filtrarPeriodo('30d', this)">30 dias</button>
+      <input type="date" id="adminDataInicio" class="btn-admin" onchange="aplicarDataCustom()">
+      <input type="date" id="adminDataFim" class="btn-admin" onchange="aplicarDataCustom()">
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #38BDF8; font-weight: 700; cursor: pointer; background: #1E293B; padding: 6px 12px; border-radius: 8px; border: 1px solid #334155;">
+        <input type="checkbox" id="filtroApenasReal" checked onchange="atualizarDashboardAnalytics(filtroAtual)" style="accent-color: #38BDF8; width: 16px; height: 16px;">
+        Apenas Tráfego Real (Bio)
+      </label>
+      <a href="index.html" class="btn-admin btn-admin-site">Ver Loja ↗</a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Faturamento Total</div>
+      <div class="kpi-value" id="kpi-faturamento">R$ 0,00</div>
+      <div class="kpi-sub" id="kpi-ticket">Ticket Médio: R$ 0,00</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversão Geral</div>
+      <div class="kpi-value" id="kpi-conversao">0,0%</div>
+      <div class="kpi-sub" id="kpi-vendas-cont">0 vendas</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Adesão Order Bump</div>
+      <div class="kpi-value" id="kpi-orderbump">0,0%</div>
+      <div class="kpi-sub" id="kpi-bump-cont">0 adicionados</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tentativas vs Pagos</div>
+      <div class="kpi-value" id="kpi-checkout-ratio">0/0</div>
+      <div class="kpi-sub" id="kpi-checkout-rec">Abandonos</div>
+    </div>
+  </div>
+
+  <!-- Funil Horizontal UTMify -->
+  <div class="funnel-container">
+    <div class="funnel-title">
+      <span>Funil Horizontal por Etapa</span>
+      <span style="font-size: 12px; color: #38BDF8;">Percentual relativo às visitas da LP</span>
+    </div>
+    <div class="funnel-horizontal" id="funnelBarsWrapper"></div>
+  </div>
+
+  <!-- CMS da Página Principal (Headline e Capa) -->
+  <div class="cms-container">
+    <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">Página Inicial (Landing Page)</h3>
+    <div style="display: grid; gap: 12px; margin-bottom: 16px;">
+      <div>
+        <label style="font-size: 12px; color: #94A3B8;">Headline Principal:</label>
+        <input type="text" id="cmsEditHeadline" placeholder="Ex: O presente que vira a história favorita...">
+      </div>
+      <div>
+        <label style="font-size: 12px; color: #94A3B8;">URL da Foto de Capa (Mockup do Livro):</label>
+        <input type="text" id="cmsEditImage" placeholder="https://exemplo.com/sua-imagem.jpg">
+      </div>
+    </div>
+    <button class="btn-admin" style="background: #3B82F6; border: none; padding: 10px 16px;" onclick="salvarConfiguracoesCMS()">Salvar Capa & Headline</button>
+  </div>
+
+  <!-- LISTA VISUAL DAS ETAPAS DO QUIZ -->
+  <div class="cms-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <div>
+        <h3 style="font-size: 15px; font-weight: 700;">Etapas do Quiz</h3>
+        <p style="font-size: 12px; color: #94A3B8;">Clique em "Editar Visualmente" para trocar fotos, cores e opções</p>
+        <p style="font-size: 12px; color: #38BDF8; margin-top: 6px;">As etapas ao vivo agora vêm do quiz-config.json no GitHub. O editor aqui só testa neste navegador e não publica no site. Para mudar para todo mundo, edite o quiz-config.json no GitHub e salve.</p>
+      </div>
+      <button class="btn-admin" style="background: #10B981; border: none; padding: 10px 14px;" onclick="abrirNovoPassoModal()">+ Nova Etapa</button>
+    </div>
+
+    <div class="etapas-visual-list" id="etapasVisualContainer">
+      <!-- Injetado dinamicamente -->
+    </div>
+  </div>
+
+  <!-- ================= MODAL DE EDIÇÃO VISUAL ================= -->
+  <div class="modal-overlay" id="editorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; font-weight: 800;" id="modalEditorTitulo">Editar Etapa do Quiz</h3>
+        <button onclick="fecharModal()" style="background:none; border:none; color:#FFF; font-size:18px; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <label style="font-size: 12px; color: #94A3B8;">Título da Pergunta no Quiz:</label>
+        <input type="text" id="modalInputTitle" style="margin-bottom: 12px;" oninput="atualizarPreviaModal()">
+
+        <label style="font-size: 12px; color: #94A3B8;">Subtítulo (Instrução):</label>
+        <input type="text" id="modalInputSubtitle" style="margin-bottom: 16px;" oninput="atualizarPreviaModal()">
+
+        <!-- Prévia Visual dos Botões / Cards -->
+        <label style="font-size: 12px; color: #38BDF8; font-weight: 700;">Prévia Visual dos Cards (Como aparece no celular):</label>
+
+        <div class="preview-box">
+          <div class="preview-header-quiz">
+            <h4 style="font-family:'Quicksand', sans-serif; font-size: 16px;" id="modalPreviewTitle">Título</h4>
+            <p style="font-size: 12px; color: #94A3B8;" id="modalPreviewSubtitle">Subtítulo</p>
+          </div>
+          <div class="preview-cards-grid" id="modalPreviewCards">
+            <!-- Cards renderizados interativamente aqui -->
+          </div>
+        </div>
+
+        <button class="btn-admin" style="background: #334155; border: 1px dashed #64748B; width: 100%; padding: 10px; margin-top: 8px;" id="btnAdicionarOpcao" onclick="adicionarOpcaoNoModal()">
+          + Adicionar Outro Card nesta Etapa
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-admin" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-admin" style="background: #10B981; border: none; padding: 10px 18px;" onclick="salvarEtapaModal()">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* ==========================================================================
+     DADOS E CONFIGURAÇÃO
+     ========================================================================== */
+  const DEFAULT_QUIZ_CONFIG = [
+    {
+      id: "step_nome",
+      title: "Quem é a estrela do livro?",
+      subtitle: "Digite o primeiro nome da criança",
+      tipo: "texto",
+      chave: "nome_crianca"
+    },
+    {
+      id: "step_genero",
+      title: "Qual o gênero da criança?",
+      subtitle: "Para personalizarmos a história",
+      tipo: "cards",
+      chave: "genero",
+      opcoes: [
+        { label: "Menino", valor: "menino", icone: "👦", imagem: "" },
+        { label: "Menina", valor: "menina", icone: "👧", imagem: "" }
+      ]
+    },
+    {
+      id: "step_pele",
+      title: "Tom de pele do personagem",
+      subtitle: "Selecione o tom correspondente",
+      tipo: "cards",
+      chave: "pele",
+      opcoes: [
+        { label: "Clara", valor: "clara", cor: "#FDDFB2", imagem: "" },
+        { label: "Morena", valor: "morena", cor: "#C68642", imagem: "" },
+        { label: "Negra", valor: "negra", cor: "#63381B", imagem: "" }
+      ]
+    },
+    {
+      id: "step_cabelo",
+      title: "Cor do cabelinho",
+      subtitle: "Como são as madeixas?",
+      tipo: "cards",
+      chave: "cabelo",
+      opcoes: [
+        { label: "Castanho", valor: "castanho", cor: "#4A2810", imagem: "" },
+        { label: "Preto", valor: "preto", cor: "#1A1A1A", imagem: "" },
+        { label: "Loiro", valor: "loiro", cor: "#E2B258", imagem: "" },
+        { label: "Ruivo", valor: "ruivo", cor: "#B54213", imagem: "" }
+      ]
+    },
+    {
+      id: "step_tema",
+      title: "Qual o universo da história?",
+      subtitle: "Escolha o mundo mágico",
+      tipo: "cards",
+      chave: "tema",
+      opcoes: [
+        { label: "Dinossauros", valor: "dinossauros", icone: "🦕", imagem: "" },
+        { label: "Astronauta", valor: "astronauta", icone: "🚀", imagem: "" }
+      ]
+    }
+  ];
+
+  let quizConfig = DEFAULT_QUIZ_CONFIG;
+  try {
+    const salvo = JSON.parse(localStorage.getItem("cms_quiz_config"));
+    if (Array.isArray(salvo) && salvo.length > 0) quizConfig = salvo;
+  } catch (e) {
+    quizConfig = DEFAULT_QUIZ_CONFIG;
+  }
+  const VALOR_BASE = 37.00;
+  let filtroAtual = "hoje";
+  let dataInicioCustom = null;
+  let dataFimCustom = null;
+  let etapaEmEdicaoIndex = null;
+  let etapaEmEdicaoObj = null;
+
+  async function carregarConfiguracaoRemotaPainel() {
+    try {
+      const resposta = await fetch("./quiz-config.json?v=" + Date.now());
+      if (!resposta.ok) return;
+      const dados = await resposta.json();
+      if (Array.isArray(dados.etapas) && dados.etapas.length > 0) {
+        quizConfig = dados.etapas;
+      }
+      if (dados.landing_page) {
+        if (dados.landing_page.headline) document.getElementById("cmsEditHeadline").value = dados.landing_page.headline;
+        if (dados.landing_page.capa_imagem_url) document.getElementById("cmsEditImage").value = dados.landing_page.capa_imagem_url;
+      }
+    } catch (erro) {
+      console.warn("Aviso: Falha ao carregar quiz-config.json no painel, a usar valores locais.", erro);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    await carregarConfiguracaoRemotaPainel();
+    atualizarDashboardAnalytics("hoje");
+    renderizarListaVisualEtapas();
+    carregarConfiguracoesCMS();
+  });
+
+  /* ==========================================================================
+     RENDERIZAÇÃO VISUAL DAS ETAPAS NO PAINEL
+     ========================================================================== */
+  function renderizarListaVisualEtapas() {
+    const container = document.getElementById("etapasVisualContainer");
+    container.innerHTML = "";
+
+    quizConfig.forEach((etapa, idx) => {
+      const card = document.createElement("div");
+      card.className = "etapa-card-row";
+      if (!etapa || typeof etapa !== "object") return;
+      if (!etapa.title) etapa.title = "Etapa sem título";
+      if (etapa.tipo !== "texto" && !Array.isArray(etapa.opcoes)) etapa.opcoes = [];
+
+      let detalhes = etapa.tipo === "texto" ? "📝 Campo de texto digitável" : `🎴 ${etapa.opcoes.length} cards interativos`;
+
+      card.innerHTML = `
+        <div class="etapa-info">
+          <h4>${idx + 1}. ${etapa.title}</h4>
+          <p>${detalhes} • Chave: <code>${etapa.chave || ""}</code></p>
+        </div>
+        <div class="etapa-actions">
+          <button class="btn-edit-vis" onclick="abrirModalEdicao(${idx})">✏️ Editar Visualmente</button>
+          <button class="btn-del-step" onclick="removerEtapa(${idx})">✕</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  /* ==========================================================================
+     MODAL DE EDIÇÃO VISUAL INTERATIVA
+     ========================================================================== */
+  function abrirModalEdicao(index) {
+    if (!quizConfig[index]) return;
+    etapaEmEdicaoIndex = index;
+    // Clona o objeto para edição
+    etapaEmEdicaoObj = JSON.parse(JSON.stringify(quizConfig[index]));
+    if (!etapaEmEdicaoObj.title) etapaEmEdicaoObj.title = "Etapa sem título";
+    if (etapaEmEdicaoObj.tipo !== "texto" && !Array.isArray(etapaEmEdicaoObj.opcoes)) {
+      etapaEmEdicaoObj.opcoes = [{ label: "Opção 1", valor: "opcao_1", icone: "⭐", imagem: "" }];
+    }
+
+    document.getElementById("modalEditorTitulo").innerText = `Editar Etapa ${index + 1}`;
+    document.getElementById("modalInputTitle").value = etapaEmEdicaoObj.title;
+    document.getElementById("modalInputSubtitle").value = etapaEmEdicaoObj.subtitle || "";
+
+    const btnAdd = document.getElementById("btnAdicionarOpcao");
+    btnAdd.style.display = etapaEmEdicaoObj.tipo === "texto" ? "none" : "block";
+
+    // Abre o modal primeiro, para a prévia nunca travar a abertura
+    document.getElementById("editorModal").style.display = "flex";
+    try {
+      atualizarPreviaModal();
+    } catch (e) {
+      document.getElementById("modalPreviewCards").innerHTML = "";
+    }
+  }
+
+  function fecharModal() {
+    document.getElementById("editorModal").style.display = "none";
+  }
+
+  function atualizarPreviaModal() {
+    if (!etapaEmEdicaoObj) return;
+    if (etapaEmEdicaoObj.tipo !== "texto" && !Array.isArray(etapaEmEdicaoObj.opcoes)) etapaEmEdicaoObj.opcoes = [];
+    const titleVal = document.getElementById("modalInputTitle").value;
+    const subVal = document.getElementById("modalInputSubtitle").value;
+
+    document.getElementById("modalPreviewTitle").innerText = titleVal || "Título da Pergunta";
+    document.getElementById("modalPreviewSubtitle").innerText = subVal || "Instrução para a criança ou responsável";
+
+    const cardsContainer = document.getElementById("modalPreviewCards");
+    cardsContainer.innerHTML = "";
+
+    if (etapaEmEdicaoObj.tipo === "texto") {
+      cardsContainer.innerHTML = `
+        <div style="grid-column: span 2; padding: 12px; background: #1E293B; border-radius: 10px; text-align: center; color: #94A3B8; font-size: 13px;">
+          ⌨️ O cliente verá um campo de digitação de texto aqui.
+        </div>
+      `;
+      return;
+    }
+
+    etapaEmEdicaoObj.opcoes.forEach((op, opIdx) => {
+      const item = document.createElement("div");
+      item.className = "editor-card-item";
+
+      // Visual do preview (imagem, cor ou emoji)
+      let previewVisual = "";
+      if (op.imagem) {
+        previewVisual = `<img src="${op.imagem}" class="editor-card-thumb" onerror="this.src='https://placehold.co/60x60?text=Foto'">`;
+      } else if (op.cor) {
+        previewVisual = `<div class="editor-color-swatch" style="background-color: ${op.cor};"></div>`;
+      } else {
+        previewVisual = `<div style="font-size: 28px; margin-bottom: 4px;">${op.icone || '✨'}</div>`;
+      }
+
+      item.innerHTML = `
+        ${previewVisual}
+        <div class="editor-card-inputs">
+          <input type="text" placeholder="Nome (Ex: Loiro)" value="${op.label || ''}" oninput="alterarOpcao(${opIdx}, 'label', this.value)">
+          <input type="text" placeholder="URL da Foto (opcional)" value="${op.imagem || ''}" oninput="alterarOpcao(${opIdx}, 'imagem', this.value)">
+        </div>
+        <button class="btn-remove-opt" onclick="removerOpcaoNoModal(${opIdx})">Remover Card</button>
+      `;
+      cardsContainer.appendChild(item);
+    });
+  }
+
+  function alterarOpcao(opIndex, campo, valor) {
+    etapaEmEdicaoObj.opcoes[opIndex][campo] = valor;
+    if (campo === "label") {
+      etapaEmEdicaoObj.opcoes[opIndex].valor = valor.toLowerCase().replace(/\s+/g, '_');
+    }
+  }
+
+  function adicionarOpcaoNoModal() {
+    if (!etapaEmEdicaoObj.opcoes) etapaEmEdicaoObj.opcoes = [];
+    etapaEmEdicaoObj.opcoes.push({
+      label: `Opção ${etapaEmEdicaoObj.opcoes.length + 1}`,
+      valor: `opcao_${Date.now()}`,
+      icone: "⭐",
+      imagem: ""
+    });
+    atualizarPreviaModal();
+  }
+
+  function removerOpcaoNoModal(opIndex) {
+    if (etapaEmEdicaoObj.opcoes.length <= 1) {
+      alert("A etapa precisa ter pelo menos 1 opção!");
+      return;
+    }
+    etapaEmEdicaoObj.opcoes.splice(opIndex, 1);
+    atualizarPreviaModal();
+  }
+
+  function salvarEtapaModal() {
+    etapaEmEdicaoObj.title = document.getElementById("modalInputTitle").value;
+    etapaEmEdicaoObj.subtitle = document.getElementById("modalInputSubtitle").value;
+
+    quizConfig[etapaEmEdicaoIndex] = etapaEmEdicaoObj;
+    localStorage.setItem("cms_quiz_config", JSON.stringify(quizConfig));
+
+    renderizarListaVisualEtapas();
+    fecharModal();
+    alert("Etapa atualizada com sucesso na loja!");
+  }
+
+  function abrirNovoPassoModal() {
+    const id = "step_" + Date.now();
+    const novoObj = {
+      id: id,
+      title: "Nova Pergunta Personalizada",
+      subtitle: "Escolha uma das opções abaixo",
+      tipo: "cards",
+      chave: "chave_" + Date.now(),
+      opcoes: [
+        { label: "Opção 1", valor: "opcao_1", icone: "🌟", imagem: "" },
+        { label: "Opção 2", valor: "opcao_2", icone: "🚀", imagem: "" }
+      ]
+    };
+
+    quizConfig.push(novoObj);
+    localStorage.setItem("cms_quiz_config", JSON.stringify(quizConfig));
+    renderizarListaVisualEtapas();
+    abrirModalEdicao(quizConfig.length - 1);
+  }
+
+  function removerEtapa(index) {
+    if (confirm(`Deseja remover "${quizConfig[index].title}"?`)) {
+      quizConfig.splice(index, 1);
+      localStorage.setItem("cms_quiz_config", JSON.stringify(quizConfig));
+      renderizarListaVisualEtapas();
+    }
+  }
+
+  /* ==========================================================================
+     CMS DA LP (HEADLINE E CAPA)
+     ========================================================================== */
+  function carregarConfiguracoesCMS() {
+    const cmsHeadline = localStorage.getItem("cms_headline");
+    const cmsImage = localStorage.getItem("cms_image");
+    const headlineEl = document.getElementById("cmsEditHeadline");
+    const imageEl = document.getElementById("cmsEditImage");
+    if (cmsHeadline && headlineEl && !headlineEl.value) headlineEl.value = cmsHeadline;
+    if (cmsImage && imageEl && !imageEl.value) imageEl.value = cmsImage;
+  }
+
+  function salvarConfiguracoesCMS() {
+    const novaHeadline = document.getElementById("cmsEditHeadline").value;
+    const novaImagem = document.getElementById("cmsEditImage").value;
+    if (novaHeadline) localStorage.setItem("cms_headline", novaHeadline);
+    if (novaImagem) localStorage.setItem("cms_image", novaImagem);
+    alert("Capa e Headline salvas com sucesso!");
+  }
+
+  /* ==========================================================================
+     ANALYTICS & FUNIL HORIZONTAL
+     ========================================================================== */
+  function filtrarPeriodo(periodo, btn) {
+    filtroAtual = periodo;
+    document.querySelectorAll(".admin-controls .btn-admin").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    atualizarDashboardAnalytics(periodo);
+  }
+
+  function aplicarDataCustom() {
+    dataInicioCustom = document.getElementById("adminDataInicio").value;
+    dataFimCustom = document.getElementById("adminDataFim").value;
+    if (dataInicioCustom && dataFimCustom) filtrarPeriodo("custom", null);
+  }
+
+  function atualizarDashboardAnalytics(periodo) {
+    const todosEventos = JSON.parse(localStorage.getItem("analytics_eventos") || "[]");
+    const agora = new Date();
+    // Filtro UTM mantido da versão anterior: com a caixa marcada, eventos sem UTM ficam ocultos
+    const apenasReal = document.getElementById("filtroApenasReal") ? document.getElementById("filtroApenasReal").checked : true;
+
+    const eventos = todosEventos.filter(ev => {
+      if (apenasReal && ev.origem && ev.origem.tipo !== "real") {
+        return false;
+      }
+      const dataEv = new Date(ev.timestamp);
+      if (periodo === "hoje") return dataEv.toDateString() === agora.toDateString();
+      if (periodo === "ontem") {
+        const ontem = new Date(); ontem.setDate(agora.getDate() - 1);
+        return dataEv.toDateString() === ontem.toDateString();
+      }
+      if (periodo === "7d") {
+        const d7 = new Date(); d7.setDate(agora.getDate() - 7);
+        return dataEv >= d7;
+      }
+      if (periodo === "30d") {
+        const d30 = new Date(); d30.setDate(agora.getDate() - 30);
+        return dataEv >= d30;
+      }
+      if (periodo === "custom" && dataInicioCustom && dataFimCustom) {
+        const inicio = new Date(dataInicioCustom);
+        const fim = new Date(dataFimCustom);
+        fim.setHours(23, 59, 59);
+        return dataEv >= inicio && dataEv <= fim;
+      }
+      return true;
+    });
+
+    const visitasLP = eventos.filter(e => e.tipo === "visita_lp").length;
+    const iniciaramQuiz = eventos.filter(e => e.tipo === "inicio_quiz").length;
+    const checkoutStart = eventos.filter(e => e.tipo === "chegou_checkout").length;
+    const digitouDados = eventos.filter(e => e.tipo === "digitou_dados").length;
+    const tentativas = eventos.filter(e => e.tipo === "tentativa_pagamento").length;
+    const pagos = eventos.filter(e => e.tipo === "pagamento_aprovado");
+
+    let faturamento = 0;
+    let bumps = 0;
+    pagos.forEach(p => {
+      faturamento += ((p.metadados && p.metadados.total) || VALOR_BASE);
+      if (p.metadados && p.metadados.order_bump) bumps++;
+    });
+
+    const taxaConversao = visitasLP > 0 ? ((pagos.length / visitasLP) * 100).toFixed(1) : "0.0";
+    const taxaBump = pagos.length > 0 ? ((bumps / pagos.length) * 100).toFixed(1) : "0.0";
+    const ticketMedio = pagos.length > 0 ? (faturamento / pagos.length).toFixed(2).replace('.', ',') : "0,00";
+
+    document.getElementById("kpi-faturamento").innerText = `R$ ${faturamento.toFixed(2).replace('.', ',')}`;
+    document.getElementById("kpi-ticket").innerText = `Ticket Médio: R$ ${ticketMedio}`;
+    document.getElementById("kpi-conversao").innerText = `${taxaConversao}%`;
+    document.getElementById("kpi-vendas-cont").innerText = `${pagos.length} vendas`;
+    document.getElementById("kpi-orderbump").innerText = `${taxaBump}%`;
+    document.getElementById("kpi-bump-cont").innerText = `${bumps} de ${pagos.length}`;
+    document.getElementById("kpi-checkout-ratio").innerText = `${tentativas} / ${pagos.length}`;
+    document.getElementById("kpi-checkout-rec").innerText = `${Math.max(0, tentativas - pagos.length)} abandonos`;
+
+    // Funil Horizontal
+    const stepsFunil = [
+      { nome: "1. Visitas LP", count: visitasLP },
+      { nome: "2. Iniciou Quiz", count: iniciaramQuiz }
+    ];
+
+    quizConfig.forEach((step, idx) => {
+      const c = eventos.filter(e => e.tipo === `quiz_${step.id}`).length;
+      stepsFunil.push({ nome: `${idx + 3}. ${step.title || ""}`, count: c });
+    });
+
+    stepsFunil.push({ nome: "Aba Checkout", count: checkoutStart });
+    stepsFunil.push({ nome: "Digitou Dados", count: digitouDados });
+    stepsFunil.push({ nome: "Tentativas", count: tentativas });
+    stepsFunil.push({ nome: "Pagas", count: pagos.length });
+
+    const wrapper = document.getElementById("funnelBarsWrapper");
+    wrapper.style.display = "block";
+    wrapper.style.overflow = "visible";
+    const baseTopo = visitasLP || 1;
+    const coresFunil = ["#0B84FF", "#B678E8", "#F27BB1", "#4AA8E0", "#3ECFA0", "#F2C93B", "#0B7DE8", "#8B5CF6", "#EC4899", "#22D3EE", "#A78BFA", "#F59E0B"];
+    const largSvg = 1000;
+    const altSvg = 320;
+    const centroSvg = 160;
+    const altMax = 280;
+    const altMin = 26;
+    const nEtapas = stepsFunil.length;
+    const largEtapa = largSvg / nEtapas;
+
+    function alturaFunil(count) {
+      const pct = baseTopo > 0 ? (count / baseTopo) * 100 : 0;
+      if (pct >= 100) return altMax;
+      return Math.max(altMin, (pct / 100) * altMax);
+    }
+
+    let svgPartes = [`<svg class="funnel-svg" viewBox="0 0 ${largSvg} ${altSvg}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Funil horizontal por etapa">`];
+    let legendaPartes = ['<div class="funnel-legend">'];
+
+    stepsFunil.forEach((s, i) => {
+      const pctTopo = ((s.count / baseTopo) * 100).toFixed(1);
+      const cor = coresFunil[i % coresFunil.length];
+      const altAtual = alturaFunil(s.count);
+      const altProx = i < nEtapas - 1 ? alturaFunil(stepsFunil[i + 1].count) : altAtual;
+      const x0 = Math.round(i * largEtapa);
+      const x1 = Math.round((i + 1) * largEtapa);
+      const textoEscuro = cor === "#F2C93B" || cor === "#3ECFA0";
+      const corTexto = textoEscuro ? "#0B0F19" : "#FFFFFF";
+      const cx = (x0 + x1) / 2;
+      svgPartes.push(`<polygon points="${x0},${centroSvg - altAtual / 2} ${x1},${centroSvg - altProx / 2} ${x1},${centroSvg + altProx / 2} ${x0},${centroSvg + altAtual / 2}" fill="${cor}" />`);
+      if (altAtual >= 70 && largEtapa >= 70) {
+        svgPartes.push(`<text x="${cx}" y="${centroSvg - 4}" text-anchor="middle" fill="${corTexto}" font-size="26" font-weight="800" font-family="Plus Jakarta Sans, sans-serif">${pctTopo}%</text>`);
+        svgPartes.push(`<text x="${cx}" y="${centroSvg + 24}" text-anchor="middle" fill="${corTexto}" font-size="17" font-family="Plus Jakarta Sans, sans-serif">${s.count}</text>`);
+      } else if (altAtual >= 40 && largEtapa >= 60) {
+        svgPartes.push(`<text x="${cx}" y="${centroSvg + 6}" text-anchor="middle" fill="${corTexto}" font-size="18" font-weight="800" font-family="Plus Jakarta Sans, sans-serif">${pctTopo}%</text>`);
+      }
+
+      let quedaHtml = "";
+      if (i > 0) {
+        const anterior = stepsFunil[i - 1].count;
+        const queda = anterior > 0 ? (((anterior - s.count) / anterior) * 100).toFixed(0) : 0;
+        quedaHtml = `<div style="color: #F87171; font-size: 11px;">-${queda}% em relação à etapa anterior</div>`;
+      }
+      legendaPartes.push(`<div class="funnel-legend-row"><div style="display: flex; gap: 8px; align-items: flex-start; flex: 1;"><span class="funnel-legend-dot" style="background: ${cor};"></span><span>${s.nome}</span></div><div style="text-align: right; flex-shrink: 0;"><strong>${s.count}</strong> <span style="color: #38BDF8; font-weight: 700;">${pctTopo}%</span>${quedaHtml}</div></div>`);
+    });
+
+    svgPartes.push("</svg>");
+    legendaPartes.push("</div>");
+    wrapper.innerHTML = svgPartes.join("") + legendaPartes.join("");
+  }
+</script>
+</body>
+</html>
