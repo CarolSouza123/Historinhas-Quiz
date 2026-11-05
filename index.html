@@ -8,89 +8,82 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #10B981;
-      --primary-hover: #059669;
-      --brand-red: #D92D20;
-      --brand-blue: #4F46E5;
-      --bg: #F8FAFC;
-      --card-bg: #FFFFFF;
-      --text: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --radius: 20px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-
-    .app-viewport { width: 100%; max-width: 480px; min-height: 100vh; background: var(--card-bg); display: flex; flex-direction: column; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.04); }
-
-    /* LANDING PAGE */
-    #view-landing { padding: 0 0 32px 0; text-align: center; }
-    .lp-header { padding: 18px 20px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .lp-logo { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 800; color: #E11D48; letter-spacing: -0.5px; line-height: 1.2; }
-    .lp-logo .logo-i { position: relative; display: inline-block; }
-    .lp-logo .logo-star { position: absolute; left: 50%; top: -0.12em; transform: translateX(-50%); font-size: 0.55em; color: #F59E0B; line-height: 1; pointer-events: none; }
-    .lp-notice-banner { background: #DC2626; color: #FFF; font-size: 13px; font-weight: 700; padding: 8px 16px; letter-spacing: 0.5px; text-transform: uppercase; }
-    .lp-content { padding: 24px 20px 10px; }
-    .lp-headline { font-family: 'Quicksand', sans-serif; font-size: 26px; line-height: 1.25; font-weight: 800; color: #0F172A; margin-bottom: 20px; }
-    .lp-headline .highlight { color: #E11D48; }
-    .lp-mockup-wrapper { position: relative; margin: 10px auto 26px; width: 100%; max-width: 380px; aspect-ratio: 1 / 1; border-radius: 22px; overflow: hidden; background: #EEF2F6; box-shadow: 0 16px 32px -12px rgba(15, 23, 42, 0.18); }
-    .lp-mockup-img { width: 100%; height: 100%; display: block; object-fit: cover; aspect-ratio: 1 / 1; }
-    .lp-description { font-size: 15px; line-height: 1.55; color: #334155; margin-bottom: 24px; padding: 0 8px; }
-    .btn-cta { width: 100%; background: #00A859; color: #FFF; border: none; padding: 18px 20px; border-radius: 14px; font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 168, 89, 0.35); }
-    .btn-cta:hover { background: #00924c; }
-    .lp-time-badge { display: inline-flex; align-items: center; gap: 6px; background: #FAF5FF; color: #9333EA; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 99px; margin: 14px auto 18px; }
-    .lp-guarantee-card { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 14px; padding: 14px 16px; margin: 0 20px; display: flex; align-items: center; gap: 12px; text-align: left; font-size: 12.5px; color: #92400E; line-height: 1.45; }
-    .lp-guarantee-card .icon { font-size: 24px; flex-shrink: 0; }
-
-    /* QUIZ */
-    #view-quiz { display: none; padding: 20px 20px 32px; flex-direction: column; flex: 1; }
-    .quiz-top { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-    .btn-back { background: #F1F5F9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; font-weight: 700; cursor: pointer; color: var(--text); }
-    .progress-bar-container { flex: 1; height: 8px; background: #EEF2F6; border-radius: 99px; overflow: hidden; }
-    .progress-bar { height: 100%; width: 10%; background: linear-gradient(90deg, #4F46E5, #00A859); transition: width 0.3s; }
-    .quiz-title { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-    .quiz-subtitle { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 22px; }
-    .options-grid { display: grid; gap: 12px; margin-bottom: 24px; }
-    .grid-2 { grid-template-columns: 1fr 1fr; }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid-4 { grid-template-columns: 1fr 1fr; }
-    .card-option { border: 2px solid var(--border); border-radius: var(--radius); padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s; background: #FFF; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .card-option.selected { border-color: var(--brand-blue); background: #EEF2FF; }
-    .card-option .option-label { font-size: 14px; font-weight: 700; color: #1E293B; }
-    input[type="text"], textarea { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--border); font-size: 16px; outline: none; margin-bottom: 20px; }
-
-    /* CHECKOUT */
-    #view-checkout { display: none; padding: 24px 20px; flex-direction: column; }
-    .checkout-book-card { background: linear-gradient(135deg, #1E1B4B, #4338CA); color: #FFF; border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 20px; }
-    .checkout-book-title { font-family: 'Quicksand', sans-serif; font-size: 20px; font-weight: 800; margin-top: 8px; }
-    .order-bump-box { background: #FEF3C7; border: 2px dashed #F59E0B; border-radius: 14px; padding: 14px; margin-bottom: 20px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; }
-    .order-bump-box input { width: 20px; height: 20px; margin-top: 2px; }
+    :root { --primary:#10B981; --primary-hover:#059669; --brand-red:#D92D20; --brand-blue:#4F46E5; --bg:#F8FAFC; --card-bg:#FFFFFF; --text:#0F172A; --text-muted:#64748B; --border:#E2E8F0; --radius:20px; }
+    * { box-sizing:border-box; margin:0; padding:0; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+    body { background-color:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+    .app-viewport { width:100%; max-width:480px; min-height:100vh; background:var(--card-bg); display:flex; flex-direction:column; position:relative; box-shadow:0 0 40px rgba(0,0,0,0.04); }
+    #view-landing { padding:0 0 32px 0; text-align:center; }
+    .lp-header { padding:18px 20px 14px; display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .lp-logo { font-family:'Quicksand',sans-serif; font-size:22px; font-weight:800; color:#E11D48; letter-spacing:-0.5px; line-height:1.2; }
+    .lp-logo .logo-i { position:relative; display:inline-block; }
+    .lp-logo .logo-star { position:absolute; left:50%; top:-0.12em; transform:translateX(-50%); font-size:0.55em; color:#F59E0B; line-height:1; pointer-events:none; }
+    .lp-notice-banner { background:#DC2626; color:#FFF; font-size:13px; font-weight:700; padding:8px 16px; letter-spacing:0.5px; text-transform:uppercase; }
+    .lp-content { padding:24px 20px 10px; }
+    .lp-headline { font-family:'Quicksand',sans-serif; font-size:26px; line-height:1.25; font-weight:800; color:#0F172A; margin-bottom:20px; }
+    .lp-headline .highlight { color:#E11D48; }
+    .lp-mockup-wrapper { position:relative; margin:10px auto 26px; width:100%; max-width:380px; aspect-ratio:1 / 1; border-radius:22px; overflow:hidden; background:#EEF2F6; box-shadow:0 16px 32px -12px rgba(15,23,42,0.18); }
+    .lp-mockup-img { width:100%; height:100%; display:block; object-fit:cover; aspect-ratio:1 / 1; }
+    .lp-description { font-size:15px; line-height:1.55; color:#334155; margin-bottom:24px; padding:0 8px; }
+    .btn-cta { width:100%; background:#00A859; color:#FFF; border:none; padding:18px 20px; border-radius:14px; font-size:17px; font-weight:800; text-transform:uppercase; letter-spacing:0.3px; cursor:pointer; box-shadow:0 8px 20px rgba(0,168,89,0.35); transition:0.2s; }
+    .btn-cta:hover { background:#00924c; }
+    .btn-cta:disabled { background:#94A3B8; cursor:not-allowed; box-shadow:none; }
+    .lp-time-badge { display:inline-flex; align-items:center; gap:6px; background:#FAF5FF; color:#9333EA; font-size:13px; font-weight:600; padding:8px 16px; border-radius:99px; margin:14px auto 18px; }
+    .lp-guarantee-card { background:#FFFBEB; border:1px solid #FDE68A; border-radius:14px; padding:14px 16px; margin:0 20px; display:flex; align-items:center; gap:12px; text-align:left; font-size:12.5px; color:#92400E; line-height:1.45; }
+    .lp-guarantee-card .icon { font-size:24px; flex-shrink:0; }
+    #view-quiz { display:none; padding:20px 20px 32px; flex-direction:column; flex:1; }
+    .quiz-top { margin-bottom:20px; }
+    .quiz-step-label { font-size:13px; font-weight:700; color:var(--text-muted); text-align:center; margin-bottom:8px; }
+    .progress-bar-container { height:8px; background:#EEF2F6; border-radius:99px; overflow:hidden; }
+    .progress-bar { height:100%; width:16%; background:linear-gradient(90deg,#4F46E5,#00A859); transition:width 0.3s; }
+    .quiz-title { font-family:'Quicksand',sans-serif; font-size:22px; font-weight:800; text-align:center; margin-bottom:8px; }
+    .quiz-subtitle { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:22px; }
+    .options-grid { display:grid; gap:12px; margin-bottom:24px; }
+    .grid-2 { grid-template-columns:1fr 1fr; }
+    .card-option { border:2px solid var(--border); border-radius:var(--radius); padding:16px 12px; text-align:center; cursor:pointer; transition:all 0.2s; background:#FFF; display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .card-option.selected { border-color:var(--brand-blue); background:#EEF2FF; }
+    .card-option .option-label { font-size:14px; font-weight:700; color:#1E293B; }
+    .swatch-row { display:flex; gap:16px; justify-content:center; margin-bottom:24px; flex-wrap:wrap; }
+    .swatch-item { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; background:none; border:none; padding:4px; }
+    .swatch-circle { width:52px; height:52px; border-radius:50%; border:2px solid #E2E8F0; box-shadow:inset 0 0 0 2px rgba(255,255,255,0.4); }
+    .swatch-item.selected .swatch-circle { outline:3px solid var(--brand-blue); outline-offset:4px; border-color:var(--brand-blue); }
+    .swatch-label { font-size:13px; font-weight:700; color:#1E293B; }
+    .theme-card { position:relative; width:100%; aspect-ratio:16 / 9; border-radius:16px; overflow:hidden; cursor:pointer; border:2px solid var(--border); background:linear-gradient(135deg,#1E1B4B,#4338CA); text-align:left; padding:0; }
+    .theme-card.selected { border-color:var(--brand-blue); outline:3px solid var(--brand-blue); outline-offset:2px; }
+    .theme-card img { width:100%; height:100%; object-fit:cover; display:block; }
+    .theme-card .theme-gradient { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.15) 55%,rgba(0,0,0,0) 100%); }
+    .theme-card .theme-title { position:absolute; left:16px; right:16px; bottom:14px; color:#FFF; font-family:'Quicksand',sans-serif; font-size:18px; font-weight:800; text-shadow:0 2px 8px rgba(0,0,0,0.5); }
+    .theme-tag { position:absolute; top:12px; left:12px; background:#DC2626; color:#FFF; font-size:11px; font-weight:800; padding:6px 10px; border-radius:99px; text-transform:uppercase; letter-spacing:0.4px; }
+    input[type="text"], input[type="email"], textarea { width:100%; padding:16px; border-radius:14px; border:2px solid var(--border); font-size:16px; outline:none; margin-bottom:20px; }
+    textarea { resize:vertical; min-height:110px; }
+    .btn-back { background:none; border:none; color:var(--text-muted); font-size:14px; font-weight:700; cursor:pointer; padding:10px 4px; align-self:flex-start; }
+    #view-loading { display:none; padding:48px 20px; flex-direction:column; align-items:center; text-align:center; flex:1; justify-content:center; }
+    .loading-bar-container { width:100%; height:12px; background:#EEF2F6; border-radius:99px; overflow:hidden; margin:24px 0 12px; }
+    .loading-bar { height:100%; width:0%; background:linear-gradient(90deg,#4F46E5,#00A859); transition:width 0.1s linear; }
+    .loading-text { font-family:'Quicksand',sans-serif; font-size:18px; font-weight:700; min-height:52px; }
+    .loading-pct { font-size:13px; color:var(--text-muted); font-weight:700; }
+    #view-preview { display:none; padding:24px 20px 32px; flex-direction:column; align-items:center; flex:1; }
+    .cover-mockup { position:relative; width:100%; max-width:340px; aspect-ratio:3 / 4; border-radius:18px; overflow:hidden; background:linear-gradient(135deg,#1E1B4B,#4338CA); box-shadow:0 20px 40px -12px rgba(15,23,42,0.35); margin-bottom:24px; }
+    .cover-mockup img { width:100%; height:100%; object-fit:cover; display:block; }
+    .cover-title { position:absolute; left:18px; right:18px; bottom:22px; color:#FFF; font-family:'Quicksand',sans-serif; font-size:26px; line-height:1.2; font-weight:800; text-align:center; text-shadow:0 2px 12px rgba(0,0,0,0.65); }
+    .preview-support { font-size:12px; color:var(--text-muted); text-align:center; margin-top:14px; }
+    .preview-msg { font-size:13px; color:#92400E; background:#FFFBEB; border:1px solid #FDE68A; border-radius:12px; padding:12px; margin-top:16px; text-align:center; display:none; }
   </style>
 </head>
 <body>
-
 <div class="app-viewport">
-  <!-- LANDING PAGE -->
   <section id="view-landing">
     <div class="lp-header">
       <div class="lp-logo" id="cms-logo" aria-label="Kidu">K<span class="logo-i">i<span class="logo-star" aria-hidden="true">★</span></span>du</div>
     </div>
-    <div class="lp-notice-banner" id="cms-banner">🎄 Edição Especial de Natal</div>
+    <div class="lp-notice-banner" id="cms-banner">Edição Especial de Natal</div>
     <div class="lp-content">
-      <h1 class="lp-headline" id="cms-headline">
-        O presente que vira <span class="highlight">a história favorita</span> de uma criança
-      </h1>
+      <h1 class="lp-headline" id="cms-headline">O presente que vira <span class="highlight">a história favorita</span> de uma criança</h1>
       <div class="lp-mockup-wrapper">
         <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=640&h=640&auto=format&fit=crop&q=70" alt="Livro Infantil" class="lp-mockup-img" id="cms-main-image" width="640" height="640" fetchpriority="high" decoding="async">
       </div>
-      <p class="lp-description" id="cms-description">
-        Crie um livro ilustrado personalizado com o nome, o jeitinho e a aparência de quem você ama — filho(a), neto(a), sobrinho(a) ou afilhado(a).
-      </p>
+      <p class="lp-description" id="cms-description">Crie um livro ilustrado personalizado com o nome, o jeitinho e a aparência de quem você ama, filho, neto, sobrinho ou afilhado.</p>
       <button class="btn-cta" onclick="iniciarQuiz()">Quero Criar o Livro Agora</button>
-      <div class="lp-time-badge">⏱️ Leva só 1 minuto para responder</div>
+      <div class="lp-time-badge">Leva só 1 minuto para responder</div>
       <div class="lp-guarantee-card">
         <div class="icon">🛡️</div>
         <div><strong>Satisfação garantida.</strong> Se você não amar o livrinho, devolvemos 100% do valor em até 7 dias.</div>
@@ -98,382 +91,348 @@
     </div>
   </section>
 
-  <!-- QUIZ -->
   <section id="view-quiz">
     <div class="quiz-top">
-      <button class="btn-back" onclick="voltarPassoQuiz()">&#8592;</button>
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="quizProgressBar"></div>
-      </div>
+      <div class="quiz-step-label" id="quizStepLabel">Passo 1 de 6</div>
+      <div class="progress-bar-container"><div class="progress-bar" id="quizProgressBar"></div></div>
     </div>
     <h2 class="quiz-title" id="quizStepTitle">Título da Etapa</h2>
-    <p class="quiz-subtitle" id="quizStepSubtitle">Subtítulo da Etapa</p>
+    <p class="quiz-subtitle" id="quizStepSubtitle"></p>
     <div id="quizStepDynamicArea"></div>
+    <button class="btn-back" onclick="voltarPassoQuiz()">← Voltar</button>
   </section>
 
-  <!-- CHECKOUT -->
-  <section id="view-checkout">
-    <div class="checkout-book-card">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">Seu Livro Exclusivo</div>
-      <div class="checkout-book-title" id="checkoutBookTitle">As Aventuras Mágicas</div>
-      <div style="font-size: 13px; margin-top: 10px; opacity: 0.9;" id="checkoutSummaryText">Personalizado com carinho.</div>
-    </div>
+  <section id="view-loading">
+    <div class="lp-logo" aria-label="Kidu">K<span class="logo-i">i<span class="logo-star" aria-hidden="true">★</span></span>du</div>
+    <div class="loading-bar-container"><div class="loading-bar" id="loadingBar"></div></div>
+    <div class="loading-pct" id="loadingPct">0%</div>
+    <div class="loading-text" id="loadingText">Personalizando as páginas...</div>
+  </section>
 
-    <div style="margin-bottom: 20px;">
-      <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Dedicatória impressa no livro (opcional):</label>
-      <textarea id="checkoutDedicatoria" rows="3" maxlength="350" placeholder="Com muito amor dos seus pais..."></textarea>
+  <section id="view-preview">
+    <div class="cover-mockup">
+      <img id="previewCoverImg" src="" alt="Capa do livro">
+      <div class="cover-title" id="previewCoverTitle"></div>
     </div>
-
-    <div class="order-bump-box" onclick="toggleOrderBump()">
-      <input type="checkbox" id="bumpCheckbox" onchange="calcularTotal()">
-      <div>
-        <div style="font-size: 14px; font-weight: 700; color: #92400E;">SIM! Adicionar Versão de Colorir e Imprimir (+ R$ 14,90)</div>
-        <div style="font-size: 12px; color: #B45309; margin-top: 4px;">Livro de atividades em PDF pronto com os desenhos para colorir.</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-      <label style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">E-mail para receber o livro digital:</label>
-      <input type="text" id="checkoutEmail" placeholder="seuemail@exemplo.com" oninput="registrarDigitacaoDados()">
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <div>
-        <span style="font-size: 13px; color: var(--text-muted); text-decoration: line-through;">De R$ 67,00</span>
-        <div style="font-size: 24px; font-weight: 800; color: #00A859;" id="checkoutDisplayTotal">R$ 37,00</div>
-      </div>
-      <div style="font-size: 11px; color: #64748B; text-align: right;">Pagamento via Stripe<br>Acesso imediato no e-mail</div>
-    </div>
-
-    <button class="btn-cta" id="btnFinalizar" onclick="finalizarParaStripe()">Garantir Meu Livro Agora &#8594;</button>
+    <button class="btn-cta" id="btnGarantir" onclick="garantirLivro()">Garantir o Livro Agora</button>
+    <div class="preview-support">Pagamento 100% seguro via Stripe • Acesso instantâneo</div>
+    <div class="preview-msg" id="previewMsg"></div>
   </section>
 </div>
-
 <script>
-  /* URLs reais, preencher quando estiverem prontas. Enquanto estiverem vazias, o site continua no modo de teste local, sem quebrar o checkout. */
+  /* URLs reais, preencher quando estiverem prontas. Enquanto estiverem vazias, o site não redireciona para um link quebrado. */
   const APPS_SCRIPT_URL = "";
   const STRIPE_PAYMENT_LINK = "";
 
-  const DEFAULT_QUIZ_CONFIG = [
-    { id: "step_nome", title: "Quem é a estrela do livro?", subtitle: "Digite o primeiro nome da criança", tipo: "texto", chave: "nome_crianca", placeholder: "Ex: Mateo" },
-    { id: "step_genero", title: "Qual o gênero da criança?", subtitle: "Para ajustarmos a história", tipo: "cards", chave: "genero", opcoes: [{ label: "Menino", valor: "menino", icone: "👦" }, { label: "Menina", valor: "menina", icone: "👧" }] },
-    { id: "step_pele", title: "Tom de pele do personagem", subtitle: "Selecione a cor correspondente", tipo: "cards", chave: "pele", opcoes: [{ label: "Clara", valor: "clara", cor: "#FDDFB2" }, { label: "Morena", valor: "morena", cor: "#C68642" }, { label: "Negra", valor: "negra", cor: "#63381B" }] },
-    { id: "step_cabelo", title: "Cor do cabelinho", subtitle: "Como é o cabelo?", tipo: "cards", chave: "cabelo", opcoes: [{ label: "Castanho", valor: "castanho", cor: "#4A2810" }, { label: "Preto", valor: "preto", cor: "#1A1A1A" }, { label: "Loiro", valor: "loiro", cor: "#E2B258" }, { label: "Ruivo", valor: "ruivo", cor: "#B54213" }] },
-    { id: "step_tema", title: "Qual o universo da história?", subtitle: "Escolha o mundo mágico", tipo: "cards", chave: "tema", opcoes: [{ label: "Dinossauros", valor: "dinossauros", icone: "🦕" }, { label: "Astronauta", valor: "astronauta", icone: "🚀" }] }
+  /* Dados do quiz, objeto global pedido na especificação. */
+  let quizData = {
+    nome_crianca: "",
+    genero: "",
+    pele: "",
+    cabelo: "",
+    tema: "",
+    dedicatoria: "",
+    email: "",
+    order_id: ""
+  };
+
+  const THEMES = {
+    natal: { label: "Magia de Natal no Polo Norte", card: "assets/temas/card_natal.jpg", capa: "assets/capas/capa_natal.jpg", titulo: "O Natal Mágico de" },
+    dinossauros: { label: "O Vale dos Dinossauros", card: "assets/temas/card_dino.jpg", capa: "assets/capas/capa_dino.jpg", titulo: "A Expedição Jurássica de" },
+    astronauta: { label: "Aventura nas Estrelas", card: "assets/temas/card_espaco.jpg", capa: "assets/capas/capa_espaco.jpg", titulo: "A Viagem Espacial de" },
+    unicornio: { label: "O Reino dos Unicórnios", card: "assets/temas/card_unicornio.jpg", capa: "assets/capas/capa_unicornio.jpg", titulo: "O Segredo dos Unicórnios e" },
+    reino_encantado: { label: "O Reino Encantado", card: "assets/temas/card_reino.jpg", capa: "assets/capas/capa_reino.jpg", titulo: "O Reino Encantado de" }
+  };
+
+  const PELES = [
+    { valor: "clara", label: "Clara", cor: "#FCD7B8" },
+    { valor: "morena", label: "Morena", cor: "#C68A56" },
+    { valor: "negra", label: "Negra", cor: "#683B24" }
+  ];
+  const CABELOS = [
+    { valor: "castanho", label: "Castanho", cor: "#4A3121" },
+    { valor: "preto", label: "Preto", cor: "#1A1A1A" },
+    { valor: "loiro", label: "Loiro", cor: "#E6C575" },
+    { valor: "ruivo", label: "Ruivo", cor: "#B84B29" }
   ];
 
-  let quizConfig = DEFAULT_QUIZ_CONFIG;
-
-  async function carregarConfiguracaoRemota() {
-    try {
-      // Faz o pedido ao ficheiro JSON no mesmo repositório
-      const resposta = await fetch("./quiz-config.json?v=" + Date.now());
-      if (!resposta.ok) throw new Error("quiz-config.json não encontrado");
-      const dados = await resposta.json();
-
-      // Aplica as alterações à Landing Page
-      if (dados.landing_page) {
-        if (dados.landing_page.headline) document.getElementById("cms-headline").innerHTML = dados.landing_page.headline;
-        if (dados.landing_page.capa_imagem_url) document.getElementById("cms-main-image").src = dados.landing_page.capa_imagem_url;
-        if (dados.landing_page.banner_aviso) document.getElementById("cms-banner").innerText = dados.landing_page.banner_aviso;
-        if (dados.landing_page.descricao) document.getElementById("cms-description").innerText = dados.landing_page.descricao;
-      }
-
-      if (Array.isArray(dados.etapas) && dados.etapas.length > 0) {
-        quizConfig = dados.etapas;
-      }
-    } catch (erro) {
-      console.warn("Aviso: Falha ao carregar quiz-config.json, a usar valores padrão.", erro);
-      quizConfig = DEFAULT_QUIZ_CONFIG;
-    }
-  }
   let currentQuizStepIndex = 0;
-  let quizRespostas = {};
-  let dadosDigitadosCheckout = false;
-  let orderBumpSelecionado = false;
-  const VALOR_BASE = 37.00;
-  const VALOR_BUMP = 14.90;
+  const TOTAL_STEPS = 6;
 
-  /* ==========================================================================
-     RASTREADOR DE ORIGEM E UTMs
-     ========================================================================== */
+  function salvarQuizData() {
+    try {
+      localStorage.setItem("kidu_quizData", JSON.stringify(quizData));
+      localStorage.setItem("kidu_quizStep", String(currentQuizStepIndex));
+    } catch (e) {}
+  }
+  function carregarQuizData() {
+    try {
+      const salvo = JSON.parse(localStorage.getItem("kidu_quizData") || "null");
+      if (salvo && typeof salvo === "object") quizData = Object.assign(quizData, salvo);
+      const passo = parseInt(localStorage.getItem("kidu_quizStep") || "0", 10);
+      if (!isNaN(passo) && passo >= 0 && passo < TOTAL_STEPS) currentQuizStepIndex = passo;
+    } catch (e) {}
+  }
+
   function obterOrigemTrafego() {
     const urlParams = new URLSearchParams(window.location.search);
-    const utmSource = urlParams.get('utm_source');
-    const utmMedium = urlParams.get('utm_medium');
-    const utmCampaign = urlParams.get('utm_campaign');
-
-    // Se tiver salvo na sessão desta aba, mantém
+    const utmSource = urlParams.get("utm_source");
+    const utmMedium = urlParams.get("utm_medium");
+    const utmCampaign = urlParams.get("utm_campaign");
     let origemSalva = sessionStorage.getItem("origem_usuario");
-
     if (!origemSalva) {
-      // Identifica se veio da bio do Instagram/TikTok ou tráfego pago
       if (utmSource || utmMedium) {
-        origemSalva = JSON.stringify({
-          tipo: "real",
-          origem: utmSource || "desconhecido",
-          meio: utmMedium || "organico",
-          campanha: utmCampaign || "geral"
-        });
+        origemSalva = JSON.stringify({ tipo: "real", origem: utmSource || "desconhecido", meio: utmMedium || "organico", campanha: utmCampaign || "geral" });
       } else {
-        // Se entrou seco sem UTM (ex: você testando no navegador)
-        origemSalva = JSON.stringify({
-          tipo: "teste_ou_direto",
-          origem: "direto",
-          meio: "nenhum",
-          campanha: "nenhuma"
-        });
+        origemSalva = JSON.stringify({ tipo: "teste_ou_direto", origem: "direto", meio: "nenhum", campanha: "nenhuma" });
       }
       sessionStorage.setItem("origem_usuario", origemSalva);
     }
-
     return JSON.parse(origemSalva);
   }
 
-  function registrarEvento(tipoEvento, metadados = {}) {
-    const eventos = JSON.parse(localStorage.getItem("analytics_eventos") || "[]");
-    const dadosOrigem = obterOrigemTrafego();
-
-    eventos.push({
-      tipo: tipoEvento,
-      timestamp: new Date().toISOString(),
-      origem: dadosOrigem, // Salva se foi "real" ou "teste_ou_direto"
-      metadados: metadados
-    });
-
-    localStorage.setItem("analytics_eventos", JSON.stringify(eventos));
-
-    // Envio em segundo plano para a planilha, só quando a URL real estiver preenchida. Não trava o site se falhar.
+  function registrarEvento(tipoEvento, metadados) {
+    metadados = metadados || {};
+    try {
+      const eventos = JSON.parse(localStorage.getItem("analytics_eventos") || "[]");
+      const dadosOrigem = obterOrigemTrafego();
+      eventos.push({ tipo: tipoEvento, timestamp: new Date().toISOString(), origem: dadosOrigem, metadados: metadados });
+      localStorage.setItem("analytics_eventos", JSON.stringify(eventos));
+    } catch (e) {}
     if (APPS_SCRIPT_URL) {
-      fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          tipo_requisicao: "evento_metrica",
-          evento: tipoEvento,
-          utm_source: dadosOrigem.origem || "direto",
-          utm_medium: dadosOrigem.meio || "nenhum",
-          utm_campaign: dadosOrigem.campanha || "nenhuma"
-        })
-      }).catch(() => {});
+      const dadosOrigem = obterOrigemTrafego();
+      fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ tipo_requisicao: "evento_metrica", evento: tipoEvento, utm_source: dadosOrigem.origem || "direto", utm_medium: dadosOrigem.meio || "nenhum", utm_campaign: dadosOrigem.campanha || "nenhuma" }) }).catch(function () {});
     }
   }
 
-  window.addEventListener("DOMContentLoaded", async () => {
-    await carregarConfiguracaoRemota();
-    registrarEvento("visita_lp");
-  });
+  function nomeExibicao() { return quizData.nome_crianca || "Pequeno Herói"; }
 
   function iniciarQuiz() {
     registrarEvento("inicio_quiz");
     document.getElementById("view-landing").style.display = "none";
+    document.getElementById("view-preview").style.display = "none";
+    document.getElementById("view-loading").style.display = "none";
     document.getElementById("view-quiz").style.display = "flex";
-    currentQuizStepIndex = 0;
-    renderizarEtapaQuiz();
+    if (!quizData.nome_crianca) currentQuizStepIndex = 0;
+    else if (!quizData.genero) currentQuizStepIndex = 1;
+    else if (!quizData.pele) currentQuizStepIndex = 2;
+    else if (!quizData.cabelo) currentQuizStepIndex = 3;
+    else if (!quizData.tema) currentQuizStepIndex = 4;
+    else currentQuizStepIndex = 5;
+    renderizarEtapa();
   }
 
-  function renderizarEtapaQuiz() {
-    const etapa = quizConfig[currentQuizStepIndex];
-    registrarEvento(`quiz_${etapa.id}`);
-    const pct = ((currentQuizStepIndex + 1) / (quizConfig.length + 1)) * 100;
-    document.getElementById("quizProgressBar").style.width = `${pct}%`;
-    document.getElementById("quizStepTitle").innerText = etapa.title;
-    document.getElementById("quizStepSubtitle").innerText = etapa.subtitle;
-
+  function renderizarEtapa() {
+    salvarQuizData();
+    const nome = nomeExibicao();
+    document.getElementById("quizStepLabel").innerText = "Passo " + (currentQuizStepIndex + 1) + " de 6";
+    document.getElementById("quizProgressBar").style.width = ((currentQuizStepIndex + 1) / TOTAL_STEPS * 100) + "%";
     const area = document.getElementById("quizStepDynamicArea");
     area.innerHTML = "";
+    const titleEl = document.getElementById("quizStepTitle");
+    const subEl = document.getElementById("quizStepSubtitle");
+    subEl.innerText = "";
 
-    if (etapa.tipo === "texto") {
+    if (currentQuizStepIndex === 0) {
+      registrarEvento("quiz_step_nome");
+      titleEl.innerText = "Como se chama o pequeno herói da história?";
+      subEl.innerText = "O nome que vai brilhar na capa e em todas as páginas.";
       const input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = etapa.placeholder || "Digite aqui...";
-      input.value = quizRespostas[etapa.chave] || "";
+      input.type = "text"; input.maxLength = 15; input.placeholder = "Ex: Mateo"; input.value = quizData.nome_crianca || "";
+      input.style.textAlign = "center"; input.style.fontSize = "20px"; input.style.fontWeight = "700";
       const btn = document.createElement("button");
-      btn.className = "btn-cta";
-      btn.innerText = "Avançar";
-      btn.onclick = () => {
-        if (!input.value.trim()) return alert("Por favor, preencha o campo!");
-        quizRespostas[etapa.chave] = input.value.trim();
-        avancarPassoQuiz();
+      btn.className = "btn-cta"; btn.innerText = "Continuar"; btn.disabled = (quizData.nome_crianca || "").trim().length < 2;
+      function atualizar() {
+        let v = input.value;
+        if (v.length > 0) v = v.charAt(0).toUpperCase() + v.slice(1);
+        if (v !== input.value) input.value = v;
+        quizData.nome_crianca = v.trim();
+        btn.disabled = quizData.nome_crianca.length < 2;
+      }
+      input.addEventListener("input", atualizar);
+      btn.onclick = function () {
+        if (quizData.nome_crianca.length < 2) return;
+        salvarQuizData(); avancarPasso();
       };
-      area.appendChild(input);
-      area.appendChild(btn);
-    } else if (etapa.tipo === "cards") {
-      const grid = document.createElement("div");
-      grid.className = `options-grid ${etapa.opcoes.length === 2 ? 'grid-2' : etapa.opcoes.length === 3 ? 'grid-3' : 'grid-4'}`;
-      etapa.opcoes.forEach(op => {
-        const card = document.createElement("div");
-        card.className = "card-option";
-        if (quizRespostas[etapa.chave] === op.valor) card.classList.add("selected");
-        if (op.imagem) {
-          const foto = document.createElement("img");
-          foto.src = op.imagem;
-          foto.alt = op.label || "";
-          foto.width = 54;
-          foto.height = 54;
-          foto.loading = "lazy";
-          foto.decoding = "async";
-          foto.style.width = "54px";
-          foto.style.height = "54px";
-          foto.style.aspectRatio = "1 / 1";
-          foto.style.objectFit = "cover";
-          foto.style.borderRadius = "10px";
-          card.appendChild(foto);
-        } else if (op.icone) {
-          const icon = document.createElement("span");
-          icon.style.fontSize = "32px";
-          icon.innerText = op.icone;
-          card.appendChild(icon);
-        } else if (op.cor) {
-          const swatch = document.createElement("div");
-          swatch.style.width = "40px";
-          swatch.style.height = "40px";
-          swatch.style.borderRadius = "50%";
-          swatch.style.backgroundColor = op.cor;
-          card.appendChild(swatch);
-        }
-        const label = document.createElement("div");
-        label.className = "option-label";
-        label.innerText = op.label;
-        card.appendChild(label);
-        card.onclick = () => {
-          quizRespostas[etapa.chave] = op.valor;
-          setTimeout(() => avancarPassoQuiz(), 180);
-        };
+      area.appendChild(input); area.appendChild(btn);
+      setTimeout(function () { input.focus(); }, 50);
+    } else if (currentQuizStepIndex === 1) {
+      registrarEvento("quiz_step_genero");
+      titleEl.innerText = "O livro é para um menino ou uma menina?";
+      const grid = document.createElement("div"); grid.className = "options-grid grid-2";
+      const opcoes = [
+        { valor: "menino", label: "Menino", svg: '<svg width="44" height="44" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="22" r="13" fill="#DBEAFE" stroke="#4F46E5" stroke-width="2"/><path d="M16 56c0-9 7-15 16-15s16 6 16 15" fill="#DBEAFE" stroke="#4F46E5" stroke-width="2"/></svg>' },
+        { valor: "menina", label: "Menina", svg: '<svg width="44" height="44" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="24" r="12" fill="#FCE7F3" stroke="#E11D48" stroke-width="2"/><path d="M18 56c2-12 6-18 14-18s12 6 14 18" fill="#FCE7F3" stroke="#E11D48" stroke-width="2"/></svg>' }
+      ];
+      opcoes.forEach(function (op) {
+        const card = document.createElement("div"); card.className = "card-option" + (quizData.genero === op.valor ? " selected" : "");
+        card.innerHTML = op.svg + '<div class="option-label">' + op.label + '</div>';
+        card.onclick = function () { quizData.genero = op.valor; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
         grid.appendChild(card);
       });
       area.appendChild(grid);
-    }
-  }
-
-  function avancarPassoQuiz() {
-    if (currentQuizStepIndex < quizConfig.length - 1) {
-      currentQuizStepIndex++;
-      renderizarEtapaQuiz();
-    } else {
-      abrirCheckout();
-    }
-  }
-
-  function voltarPassoQuiz() {
-    if (currentQuizStepIndex > 0) {
-      currentQuizStepIndex--;
-      renderizarEtapaQuiz();
-    } else {
-      document.getElementById("view-quiz").style.display = "none";
-      document.getElementById("view-landing").style.display = "block";
-    }
-  }
-
-  function abrirCheckout() {
-    registrarEvento("chegou_checkout");
-    document.getElementById("view-quiz").style.display = "none";
-    document.getElementById("view-checkout").style.display = "flex";
-    const nome = quizRespostas.nome_crianca || "Pequeno Campeão";
-    document.getElementById("checkoutBookTitle").innerText = `As Aventuras Mágicas de ${nome}`;
-    document.getElementById("checkoutSummaryText").innerText = `Personalizado com tema ${quizRespostas.tema || 'Especial'}, tom de pele ${quizRespostas.pele || 'Personalizado'} e cabelo ${quizRespostas.cabelo || 'Personalizado'}.`;
-    const dedEl = document.getElementById("checkoutDedicatoria");
-    if (dedEl) dedEl.value = `Para ${nome}, nunca deixe de sonhar alto e explorar o mundo com coragem!`;
-    calcularTotal();
-  }
-
-  function toggleOrderBump() {
-    const chk = document.getElementById("bumpCheckbox");
-    chk.checked = !chk.checked;
-    calcularTotal();
-  }
-
-  function calcularTotal() {
-    orderBumpSelecionado = document.getElementById("bumpCheckbox").checked;
-    const total = VALOR_BASE + (orderBumpSelecionado ? VALOR_BUMP : 0);
-    document.getElementById("checkoutDisplayTotal").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
-  }
-
-  function registrarDigitacaoDados() {
-    if (!dadosDigitadosCheckout) {
-      dadosDigitadosCheckout = true;
-      registrarEvento("digitou_dados");
-    }
-  }
-
-  function executarPagamento() {
-    const email = document.getElementById("checkoutEmail").value;
-    if (!email || !email.includes("@")) return alert("Digite um e-mail válido.");
-
-    registrarEvento("tentativa_pagamento", { email: email, order_bump: orderBumpSelecionado, total: VALOR_BASE + (orderBumpSelecionado ? VALOR_BUMP : 0) });
-
-    // Simulação ou redirecionamento real
-    const aprovado = confirm("Deseja simular o pagamento aprovado agora?");
-    if (aprovado) {
-      registrarEvento("pagamento_aprovado", { email: email, order_bump: orderBumpSelecionado, total: VALOR_BASE + (orderBumpSelecionado ? VALOR_BUMP : 0) });
-      alert("Pagamento aprovado!");
-      location.reload();
-    }
-  }
-
-  async function finalizarParaStripe() {
-    const emailEl = document.getElementById("checkoutEmail");
-    const email = emailEl ? emailEl.value : "";
-    if (!email || !email.includes("@")) return alert("Digite um e-mail válido.");
-    const dedEl = document.getElementById("checkoutDedicatoria");
-    const total = VALOR_BASE + (orderBumpSelecionado ? VALOR_BUMP : 0);
-
-    registrarEvento("tentativa_pagamento", { email: email, order_bump: orderBumpSelecionado, total: total });
-
-    // Sem as URLs reais, continua no modo de teste local, sem quebrar o checkout
-    if (!APPS_SCRIPT_URL || !STRIPE_PAYMENT_LINK) {
-      const aprovado = confirm("Deseja simular o pagamento aprovado agora?");
-      if (aprovado) {
-        registrarEvento("pagamento_aprovado", { email: email, order_bump: orderBumpSelecionado, total: total });
-        alert("Pagamento aprovado!");
-        location.reload();
+    } else if (currentQuizStepIndex === 2) {
+      registrarEvento("quiz_step_pele");
+      titleEl.innerText = "Qual o tom de pele de " + nome + "?";
+      subEl.innerText = "Escolhe a tonalidade mais parecida.";
+      const row = document.createElement("div"); row.className = "swatch-row";
+      PELES.forEach(function (op) {
+        const btn = document.createElement("button"); btn.className = "swatch-item" + (quizData.pele === op.valor ? " selected" : ""); btn.type = "button";
+        btn.innerHTML = '<span class="swatch-circle" style="background-color:' + op.cor + '"></span><span class="swatch-label">' + op.label + '</span>';
+        btn.onclick = function () { quizData.pele = op.valor; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        row.appendChild(btn);
+      });
+      area.appendChild(row);
+    } else if (currentQuizStepIndex === 3) {
+      registrarEvento("quiz_step_cabelo");
+      titleEl.innerText = "E a cor do cabelinho de " + nome + "?";
+      const row = document.createElement("div"); row.className = "swatch-row";
+      CABELOS.forEach(function (op) {
+        const btn = document.createElement("button"); btn.className = "swatch-item" + (quizData.cabelo === op.valor ? " selected" : ""); btn.type = "button";
+        btn.innerHTML = '<span class="swatch-circle" style="background-color:' + op.cor + '"></span><span class="swatch-label">' + op.label + '</span>';
+        btn.onclick = function () { quizData.cabelo = op.valor; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        row.appendChild(btn);
+      });
+      area.appendChild(row);
+    } else if (currentQuizStepIndex === 4) {
+      registrarEvento("quiz_step_tema");
+      titleEl.innerText = "Em qual mundo mágico " + nome + " vai entrar?";
+      const lista = document.createElement("div"); lista.style.display = "grid"; lista.style.gap = "14px"; lista.style.marginBottom = "24px";
+      Object.keys(THEMES).forEach(function (chave) {
+        const tema = THEMES[chave];
+        const card = document.createElement("div"); card.className = "theme-card" + (quizData.tema === chave ? " selected" : "");
+        card.innerHTML = '<img src="' + tema.card + '" alt="' + tema.label + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' + '<div class="theme-gradient"></div>' + (chave === "natal" ? '<span class="theme-tag">Edição Especial de Natal</span>' : '') + '<div class="theme-title">' + tema.label + '</div>';
+        card.onclick = function () { quizData.tema = chave; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        lista.appendChild(card);
+      });
+      area.appendChild(lista);
+    } else if (currentQuizStepIndex === 5) {
+      registrarEvento("quiz_step_dedicatoria");
+      titleEl.innerText = "Deixe uma dedicatória mágica";
+      subEl.innerText = "Esta mensagem será impressa na primeira página do livro.";
+      if (!quizData.dedicatoria) quizData.dedicatoria = "Para " + nome + ", nunca deixe de sonhar, explorar e ser corajoso(a). Com todo o nosso amor.";
+      const textarea = document.createElement("textarea");
+      textarea.rows = 4; textarea.maxLength = 350; textarea.value = quizData.dedicatoria;
+      textarea.placeholder = "Escreva a dedicatória...";
+      const labelEmail = document.createElement("label");
+      labelEmail.style.cssText = "font-size:13px;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;";
+      labelEmail.innerText = "E-mail dos pais (obrigatório, para envio do livro):";
+      const emailInput = document.createElement("input");
+      emailInput.type = "email"; emailInput.placeholder = "seuemail@exemplo.com"; emailInput.value = quizData.email || "";
+      const btn = document.createElement("button");
+      btn.className = "btn-cta"; btn.innerText = "Criar o Livro de " + nome + " →";
+      function validar() {
+        quizData.dedicatoria = textarea.value;
+        quizData.email = emailInput.value.trim();
+        btn.disabled = !(quizData.email && quizData.email.indexOf("@") > 0 && quizData.email.indexOf(".") > quizData.email.indexOf("@"));
       }
-      return;
+      textarea.addEventListener("input", validar); emailInput.addEventListener("input", validar); validar();
+      btn.onclick = function () {
+        validar(); if (btn.disabled) { alert("Digite um e-mail válido."); return; }
+        salvarQuizData(); iniciarCarregamento();
+      };
+      area.appendChild(textarea); area.appendChild(labelEmail); area.appendChild(emailInput); area.appendChild(btn);
     }
+  }
 
-    const btn = document.getElementById("btnFinalizar");
-    if (btn) {
-      btn.disabled = true;
-      btn.innerText = "Reservando seu livro...";
+  function avancarPasso() {
+    if (currentQuizStepIndex < TOTAL_STEPS - 1) { currentQuizStepIndex++; renderizarEtapa(); }
+  }
+  function voltarPassoQuiz() {
+    if (currentQuizStepIndex > 0) { currentQuizStepIndex--; renderizarEtapa(); }
+    else { document.getElementById("view-quiz").style.display = "none"; document.getElementById("view-landing").style.display = "block"; }
+  }
+
+  function iniciarCarregamento() {
+    registrarEvento("inicio_carregamento");
+    document.getElementById("view-quiz").style.display = "none";
+    const loading = document.getElementById("view-loading"); loading.style.display = "flex";
+    const bar = document.getElementById("loadingBar"); const pctEl = document.getElementById("loadingPct"); const textEl = document.getElementById("loadingText");
+    const nome = nomeExibicao();
+    const textos = ["Personalizando as páginas de " + nome + "...", "Preparando ilustrações em alta resolução...", "Finalizando a capa oficial..."];
+    const inicio = Date.now(); const duracao = 2500;
+    function tick() {
+      const passado = Date.now() - inicio;
+      const pct = Math.min(100, Math.round(passado / duracao * 100));
+      bar.style.width = pct + "%"; pctEl.innerText = pct + "%";
+      textEl.innerText = textos[Math.min(2, Math.floor(pct / 34))];
+      if (pct < 100) { setTimeout(tick, 50); } else { setTimeout(mostrarPrevia, 150); }
     }
+    tick();
+  }
 
+  function mostrarPrevia() {
+    registrarEvento("chegou_preview");
+    document.getElementById("view-loading").style.display = "none";
+    const preview = document.getElementById("view-preview"); preview.style.display = "flex";
+    const tema = THEMES[quizData.tema] || THEMES.natal;
+    const nome = nomeExibicao();
+    const img = document.getElementById("previewCoverImg");
+    img.src = tema.capa; img.alt = tema.titulo + " " + nome;
+    img.onerror = function () { this.style.display = "none"; };
+    img.style.display = "block";
+    document.getElementById("previewCoverTitle").innerText = tema.titulo + " " + nome;
+    const btn = document.getElementById("btnGarantir");
+    btn.disabled = false; btn.innerText = "Garantir o Livro de " + nome + " Agora";
+    document.getElementById("previewMsg").style.display = "none";
+  }
+
+  async function garantirLivro() {
+    const btn = document.getElementById("btnGarantir");
+    const nome = nomeExibicao();
+    if (!quizData.email || quizData.email.indexOf("@") < 0) { alert("Digite um e-mail válido no passo 6."); currentQuizStepIndex = 5; document.getElementById("view-preview").style.display = "none"; document.getElementById("view-quiz").style.display = "flex"; renderizarEtapa(); return; }
+    btn.disabled = true; btn.innerText = "Reservando seu livro...";
+    quizData.order_id = "KIDU-" + Math.floor(1000 + Math.random() * 9000);
+    salvarQuizData();
+    registrarEvento("tentativa_pagamento", { email: quizData.email, order_id: quizData.order_id });
     const dadosOrigem = obterOrigemTrafego();
     const payload = {
       tipo_requisicao: "pedido_livro",
-      nome_crianca: quizRespostas.nome_crianca || "",
-      genero: quizRespostas.genero || "",
-      pele: quizRespostas.pele || "",
-      cabelo: quizRespostas.cabelo || "",
-      tema: quizRespostas.tema || "",
-      dedicatoria: dedEl ? dedEl.value : "",
-      email: email,
-      comprador: email,
-      order_bump: orderBumpSelecionado,
-      valor_total: total,
+      nome_crianca: quizData.nome_crianca,
+      genero: quizData.genero,
+      pele: quizData.pele,
+      cabelo: quizData.cabelo,
+      tema: quizData.tema,
+      dedicatoria: quizData.dedicatoria,
+      email: quizData.email,
+      comprador: quizData.email,
+      order_id: quizData.order_id,
       utm_source: dadosOrigem.origem || "direto",
       utm_medium: dadosOrigem.meio || "nenhum",
       utm_campaign: dadosOrigem.campanha || "nenhuma"
     };
-
-    try {
-      const res = await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      if (data.status === "success" && data.pedido_id) {
-        window.location.href = `${STRIPE_PAYMENT_LINK}?client_reference_id=${data.pedido_id}`;
-        return;
-      }
-      throw new Error("Erro ao gerar pedido.");
-    } catch (e) {
-      // Contingência: não perde a venda se a planilha oscilar, vai para a Stripe com um ID de emergência
-      const idEmergencia = "PED-" + Math.floor(10000 + Math.random() * 90000);
-      window.location.href = `${STRIPE_PAYMENT_LINK}?client_reference_id=${idEmergencia}`;
+    if (APPS_SCRIPT_URL) {
+      try {
+        await Promise.race([
+          fetch(APPS_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }),
+          new Promise(function (resolve) { setTimeout(resolve, 1000); })
+        ]);
+      } catch (e) {}
     }
+    if (!STRIPE_PAYMENT_LINK) {
+      const msg = document.getElementById("previewMsg");
+      msg.style.display = "block";
+      msg.innerText = "Link da Stripe ainda não configurado. Seu pedido é " + quizData.order_id + ". Guarde esse código, ele vai para a Stripe assim que o link for preenchido.";
+      btn.disabled = false; btn.innerText = "Garantir o Livro de " + nome + " Agora";
+      return;
+    }
+    window.location.href = STRIPE_PAYMENT_LINK + "?client_reference_id=" + quizData.order_id + "&prefilled_email=" + encodeURIComponent(quizData.email);
   }
+
+  window.addEventListener("DOMContentLoaded", function () {
+    carregarQuizData();
+    try {
+      fetch("./quiz-config.json?v=" + Date.now()).then(function (r) { return r.json(); }).then(function (dados) {
+        if (dados && dados.landing_page) {
+          if (dados.landing_page.headline) document.getElementById("cms-headline").innerHTML = dados.landing_page.headline;
+          if (dados.landing_page.capa_imagem_url) document.getElementById("cms-main-image").src = dados.landing_page.capa_imagem_url;
+          if (dados.landing_page.banner_aviso) document.getElementById("cms-banner").innerText = dados.landing_page.banner_aviso;
+          if (dados.landing_page.descricao) document.getElementById("cms-description").innerText = dados.landing_page.descricao;
+        }
+      }).catch(function () {});
+    } catch (e) {}
+    registrarEvento("visita_lp");
+  });
 </script>
 </body>
 </html>
