@@ -35,8 +35,8 @@
     .lp-content { padding: 24px 20px 10px; }
     .lp-headline { font-family: 'Quicksand', sans-serif; font-size: 26px; line-height: 1.25; font-weight: 800; color: #0F172A; margin-bottom: 20px; }
     .lp-headline .highlight { color: #E11D48; }
-    .lp-mockup-wrapper { position: relative; margin: 10px auto 26px; width: 100%; max-width: 380px; border-radius: 22px; overflow: hidden; background: #EEF2F6; box-shadow: 0 16px 32px -12px rgba(15, 23, 42, 0.18); }
-    .lp-mockup-img { width: 100%; height: auto; display: block; object-fit: cover; }
+    .lp-mockup-wrapper { position: relative; margin: 10px auto 26px; width: 100%; max-width: 380px; aspect-ratio: 1 / 1; border-radius: 22px; overflow: hidden; background: #EEF2F6; box-shadow: 0 16px 32px -12px rgba(15, 23, 42, 0.18); }
+    .lp-mockup-img { width: 100%; height: 100%; display: block; object-fit: cover; aspect-ratio: 1 / 1; }
     .lp-description { font-size: 15px; line-height: 1.55; color: #334155; margin-bottom: 24px; padding: 0 8px; }
     .btn-cta { width: 100%; background: #00A859; color: #FFF; border: none; padding: 18px 20px; border-radius: 14px; font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 168, 89, 0.35); }
     .btn-cta:hover { background: #00924c; }
@@ -83,7 +83,7 @@
         O presente que vira <span class="highlight">a história favorita</span> de uma criança
       </h1>
       <div class="lp-mockup-wrapper">
-        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&auto=format&fit=crop&q=80" alt="Livro Infantil" class="lp-mockup-img" id="cms-main-image">
+        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=640&h=640&auto=format&fit=crop&q=70" alt="Livro Infantil" class="lp-mockup-img" id="cms-main-image" width="640" height="640" fetchpriority="high" decoding="async">
       </div>
       <p class="lp-description" id="cms-description">
         Crie um livro ilustrado personalizado com o nome, o jeitinho e a aparência de quem você ama — filho(a), neto(a), sobrinho(a) ou afilhado(a).
@@ -309,8 +309,13 @@
           const foto = document.createElement("img");
           foto.src = op.imagem;
           foto.alt = op.label || "";
+          foto.width = 54;
+          foto.height = 54;
+          foto.loading = "lazy";
+          foto.decoding = "async";
           foto.style.width = "54px";
           foto.style.height = "54px";
+          foto.style.aspectRatio = "1 / 1";
           foto.style.objectFit = "cover";
           foto.style.borderRadius = "10px";
           card.appendChild(foto);

@@ -113,7 +113,7 @@
     ],
     "landing_page": {
         "banner_aviso": "\ud83c\udf84 Edi\u00e7\u00e3o Especial de Natal",
-        "capa_imagem_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&auto=format&fit=crop&q=80",
+        "capa_imagem_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=640&h=640&auto=format&fit=crop&q=70",
         "descricao": "Crie um livro ilustrado personalizado com o nome, o jeitinho e a apar\u00eancia de quem voc\u00ea ama \u2014 filho(a), neto(a), sobrinho(a) ou afilhado(a).",
         "headline": "O presente que vira <span class=\"highlight\">a hist\u00f3ria favorita</span> de uma crian\u00e7a"
     }
