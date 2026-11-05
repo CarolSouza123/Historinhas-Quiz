@@ -29,8 +29,9 @@
     /* LANDING PAGE */
     #view-landing { padding: 0 0 32px 0; text-align: center; }
     .lp-header { padding: 18px 20px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .lp-logo { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 800; color: #E11D48; letter-spacing: -0.5px; }
-    .lp-logo span { color: #2563EB; }
+    .lp-logo { font-family: 'Quicksand', sans-serif; font-size: 22px; font-weight: 800; color: #E11D48; letter-spacing: -0.5px; line-height: 1.2; }
+    .lp-logo .logo-i { position: relative; display: inline-block; }
+    .lp-logo .logo-star { position: absolute; left: 50%; top: -0.12em; transform: translateX(-50%); font-size: 0.55em; color: #F59E0B; line-height: 1; pointer-events: none; }
     .lp-notice-banner { background: #DC2626; color: #FFF; font-size: 13px; font-weight: 700; padding: 8px 16px; letter-spacing: 0.5px; text-transform: uppercase; }
     .lp-content { padding: 24px 20px 10px; }
     .lp-headline { font-family: 'Quicksand', sans-serif; font-size: 26px; line-height: 1.25; font-weight: 800; color: #0F172A; margin-bottom: 20px; }
@@ -75,7 +76,7 @@
   <!-- LANDING PAGE -->
   <section id="view-landing">
     <div class="lp-header">
-      <div class="lp-logo" id="cms-logo">Kidu</div>
+      <div class="lp-logo" id="cms-logo" aria-label="Kidu">K<span class="logo-i">i<span class="logo-star" aria-hidden="true">★</span></span>du</div>
     </div>
     <div class="lp-notice-banner" id="cms-banner">🎄 Edição Especial de Natal</div>
     <div class="lp-content">
