@@ -2,10 +2,15 @@
 // Colado por ela em 2026-11-06, URL /exec nova. Esta versão corrige o esquema
 // para exatamente as colunas que ela mandou, na ordem dela.
 //
+// Coluna Desafio acrescentada depois de Moral, conforme a etapa nova do desafio
+// definida por ela em 06/11/2026. São 19 colunas agora. Para aplicar, ela
+// insere uma coluna depois de Moral na aba Pedidos da planilha, com o
+// cabeçalho Desafio, e cola esta versão como nova versão da mesma implantação.
+//
 // Colunas, na ordem:
 // Dados da Criança e Pedido, preenchidos no quiz via Apps Script:
 //   ID_Pedido, Data_Criacao, E-mail, Nome_Crianca, Idade, Genero, Pele, Cabelo,
-//   Tema, Moral, Dedicatoria
+//   Tema, Moral, Desafio, Dedicatoria
 // Dados de Origem e Rastreamento:
 //   UTM_Source, UTM_Campaign, UTM_Medium
 // Dados Financeiros e Status, preenchidos e atualizados pelo n8n:
@@ -41,11 +46,11 @@ var ABA_METRICAS = "Metricas";
 var ABA_TEMPORARIOS = "Temporarios";
 var HORAS_PARA_TEMPORARIO = 48;
 var DIAS_PARA_APAGAR = 7;
-var COL_STATUS = 16;
+var COL_STATUS = 17;
 var COL_DATA = 1;
 
 function cabecalhoPedidos() {
-  return ["ID_Pedido", "Data_Criacao", "E-mail", "Nome_Crianca", "Idade", "Genero", "Pele", "Cabelo", "Tema", "Moral", "Dedicatoria", "UTM_Source", "UTM_Campaign", "UTM_Medium", "Bump_Colorir", "Valor_Pago", "Status", "Data_Pagamento"];
+  return ["ID_Pedido", "Data_Criacao", "E-mail", "Nome_Crianca", "Idade", "Genero", "Pele", "Cabelo", "Tema", "Moral", "Desafio", "Dedicatoria", "UTM_Source", "UTM_Campaign", "UTM_Medium", "Bump_Colorir", "Valor_Pago", "Status", "Data_Pagamento"];
 }
 
 function obterAba(ss, nome, cabecalho) {
@@ -84,6 +89,7 @@ function doPost(e) {
       pedidoId = "KIDU-" + Math.floor(1000 + Math.random() * 9000);
     }
     var moral = data.moral || data.valor || data.ensinamento || data.valor_ensinamento || "";
+    var desafio = data.desafio || "";
     var idade = data.idade || data.faixa_idade || "";
 
     abaPedidos.appendRow([
@@ -97,6 +103,7 @@ function doPost(e) {
       data.cabelo || "",
       data.tema || "",
       moral,
+      desafio,
       data.dedicatoria || "",
       data.utm_source || "direto",
       data.utm_campaign || "nenhuma",
@@ -124,7 +131,7 @@ function doGet(e) {
   var pedidos = abaPedidos ? abaPedidos.getDataRange().getValues().slice(1) : [];
   var payload = {
     metricas: metricas.map(function (r) { return { data: r[0], origem: r[1], meio: r[2], campanha: r[3], evento: r[4] }; }),
-    pedidos: pedidos.map(function (r) { return { id: r[0], data: r[COL_DATA], email: r[2], nome: r[3], status: r[COL_STATUS], bump: r[14], total: r[15] }; })
+    pedidos: pedidos.map(function (r) { return { id: r[0], data: r[COL_DATA], email: r[2], nome: r[3], status: r[COL_STATUS], bump: r[15], total: r[16] }; })
   };
   return ContentService.createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
