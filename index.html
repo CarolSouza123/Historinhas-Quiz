@@ -402,20 +402,18 @@
     const loading = document.getElementById("view-loading"); loading.style.display = "flex";
     const bar = document.getElementById("loadingBar"); const pctEl = document.getElementById("loadingPct"); const textEl = document.getElementById("loadingText");
     const nome = nomeExibicao();
-    const artigo = quizData.genero === "menina" ? "A" : "O";
-    const peloPela = quizData.genero === "menina" ? "pela" : "pelo";
     const temaLabel = (THEMES[quizData.tema] || THEMES.natal).label;
     const desafioFrase = {
       "Medo do escuro e de tempestade": "Nessa história, " + nome + " aprende a enfrentar o medo do escuro...",
-      "Obedecer aos pais": "Nessa história, " + nome + " descobre como é bom ouvir os pais...",
-      "Hora de comer": "Nessa história, a hora de comer vira uma aventura para " + nome + "...",
-      "Hora de dormir": "Nessa história, a hora de dormir fica mais tranquila para " + nome + "...",
+      "Obedecer aos pais": "Nessa história, " + nome + " aprende a obedecer aos pais...",
+      "Hora de comer": "Nessa história, " + nome + " aprende a gostar da hora de comer...",
+      "Hora de dormir": "Nessa história, " + nome + " aprende a gostar da hora de dormir...",
       "Ciúme do irmão ou da irmã": "Nessa história, " + nome + " aprende a dividir o carinho...",
-      "Orar todas as noites e confiar em Deus": "Nessa história, " + nome + " ora todas as noites e confia em Deus..."
+      "Orar todas as noites e confiar em Deus": "Nessa história, " + nome + " aprende a orar todas as noites e confiar em Deus..."
     }[quizData.desafio] || ("Nessa história, " + nome + " vive uma grande aventura...");
     const textos = [
-      artigo + " " + nome + " está entrando na história...",
-      "Uma aventura de " + temaLabel + " espera " + peloPela + " " + nome + "...",
+      nome + " está entrando na história...",
+      "Uma aventura de " + temaLabel + " espera por " + nome + "...",
       desafioFrase,
       "A capa com o nome de " + nome + " já está quase pronta..."
     ];
