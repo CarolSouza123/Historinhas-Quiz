@@ -18,11 +18,17 @@
 // Limpeza automática: Pendente, ou sem status, com mais de 48h vai para a aba
 // Temporarios. Temporario com mais de 7 dias desde a criação é apagado, só se
 // ainda estiver Pendente ou sem status. Se um pedido em Temporarios virar Pago,
-// a limpeza devolve ele para Pedidos-Livros. Pago nunca é apagado.
+// INSTAGRAM ou VIDEO, a limpeza devolve ele para Pedidos-Livros. Pago,
+// INSTAGRAM, VIDEO e os PRONTO nunca são apagados.
 //
 // Regra do n8n: o n8n só gera e envia o PDF quando o Status é Pago, pagamento
-// aprovado. Pendente nunca dispara envio. O gatilho é o webhook da Stripe ou
-// a leitura da planilha procurando Status Pago, nunca a criação do pedido.
+// aprovado, ou INSTAGRAM ou VIDEO, que a Carol coloca na mão na planilha para
+// criar um livrinho para ela, sem pagar. Pendente nunca dispara envio.
+// O gatilho é o webhook da Stripe ou a leitura da planilha procurando Status
+// Pago, INSTAGRAM ou VIDEO, nunca a criação do pedido. Depois de gerar, o n8n
+// muda o Status para INSTAGRAM_PRONTO ou VIDEO_PRONTO, para não gerar de novo.
+// INSTAGRAM, VIDEO e os PRONTO nunca são apagados pela limpeza e nunca contam
+// como venda no painel, só Pago conta como venda.
 //
 // Para implantar, ela cola este arquivo inteiro no Apps Script, salva, e cria
 // uma nova versão da mesma implantação, a URL /exec não muda. Se criar uma
@@ -124,7 +130,15 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Limpeza diária, roda por gatilho. Não apaga nada com Status Pago.
+// Limpeza diária, roda por gatilho. Só mexe em Pendente ou sem status.
+// Pago, INSTAGRAM, VIDEO e os PRONTO nunca são movidos nem apagados.
+function statusProtegido(status) {
+  var s = String(status || "").trim();
+  return s === "Pago" || s === "INSTAGRAM" || s === "VIDEO" ||
+    s === "INSTAGRAM_PRONTO" || s === "VIDEO_PRONTO" ||
+    s === "INSTAGRAM_ENVIADO" || s === "VIDEO_ENVIADO";
+}
+
 function limparPendentesAntigos() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var agora = new Date();
@@ -136,7 +150,7 @@ function limparPendentesAntigos() {
   if (abaTempPrimeiro && abaPedidosPrimeiro) {
     var dadosResgate = abaTempPrimeiro.getDataRange().getValues();
     for (var r = dadosResgate.length - 1; r >= 1; r--) {
-      if (String(dadosResgate[r][COL_STATUS] || "").trim() === "Pago") {
+      if (statusProtegido(dadosResgate[r][COL_STATUS])) {
         abaPedidosPrimeiro.appendRow(dadosResgate[r]);
         abaTempPrimeiro.deleteRow(r + 1);
       }
@@ -164,7 +178,7 @@ function limparPendentesAntigos() {
     for (var j = dadosTemp.length - 1; j >= 1; j--) {
       var statusTemp = String(dadosTemp[j][COL_STATUS] || "").trim();
       var dataTemp = new Date(dadosTemp[j][COL_DATA]);
-      if (dataTemp < limiteApagar && statusTemp !== "Pago") abaTemp2.deleteRow(j + 1);
+      if (dataTemp < limiteApagar && !statusProtegido(statusTemp)) abaTemp2.deleteRow(j + 1);
     }
   }
 
