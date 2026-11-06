@@ -550,7 +550,7 @@
 
     const visitasLP = eventos.filter(e => e.tipo === "visita_lp").length;
     const iniciaramQuiz = eventos.filter(e => e.tipo === "inicio_quiz").length;
-    const checkoutStart = eventos.filter(e => e.tipo === "chegou_checkout").length;
+    const checkoutStart = eventos.filter(e => e.tipo === "chegou_checkout" || e.tipo === "chegou_preview").length;
     const digitouDados = eventos.filter(e => e.tipo === "digitou_dados").length;
     const tentativas = eventos.filter(e => e.tipo === "tentativa_pagamento").length;
     const pagos = eventos.filter(e => e.tipo === "pagamento_aprovado");

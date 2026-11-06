@@ -78,7 +78,7 @@
 
       const visitasLP = metricas.filter(m => m.evento === "visita_lp").length;
       const iniciouQuiz = metricas.filter(m => m.evento === "inicio_quiz").length;
-      const checkout = metricas.filter(m => m.evento === "chegou_checkout").length;
+      const checkout = metricas.filter(m => m.evento === "chegou_checkout" || m.evento === "chegou_preview").length;
       const tentativas = metricas.filter(m => m.evento === "tentativa_pagamento").length;
 
       const pagos = pedidos.filter(p => p.status === "Pago");
