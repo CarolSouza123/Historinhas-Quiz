@@ -1,12 +1,16 @@
-// Kidu, Apps Script v2, preparado em 2026-11-06, AINDA NÃO COLADO NO APPS SCRIPT DELA
+// Kidu, Apps Script v2, colado por ela em 2026-11-06, URL /exec nova.
 // O que muda em relação ao google-apps-script.gs que está no GitHub:
-// 1. doGet incluído, o código implantado hoje não tem doGet, por isso o dashboard não carrega.
+// 1. doGet incluído, o código anterior não tinha doGet, por isso o dashboard não carregava.
 // 2. Pedido aceita personagem, faixa de idade e valor/ensinamento, além de pele e cabelo.
 // 3. Pedido usa o código KIDU que o site manda, nunca cria PED.
 // 4. Limpeza automática: Pendente com mais de 48h vai para a aba Temporários,
 //    Temporário com mais de 7 dias desde a criação é apagado. Pago nunca é mexido.
-// 5. Métricas: o site só deve mandar evento para cá quando chegar na prévia/checkout,
-//    ver registrarEvento no index.html. As linhas de métrica também expiram em 7 dias.
+//    Se um pedido em Temporários virar Pago, a limpeza devolve ele para Pedidos-Livros.
+// 5. Cabeçalho da primeira coluna é ID_Pedido, como está na planilha dela.
+// 6. Regra do n8n: o n8n só gera e envia o PDF quando o Status é Pago, pagamento
+//    aprovado. Pendente nunca dispara envio. O gatilho é o webhook da Stripe ou
+//    a leitura da planilha procurando Status Pago, nunca a criação do pedido.
+// 7. Métricas: ver registrarEvento no index.html. As linhas de métrica expiram em 7 dias.
 //
 // Para implantar, ela cola este arquivo inteiro no Apps Script, salva, implanta
 // como aplicativo da Web, Executar como Eu, acesso Qualquer pessoa, copia a URL /exec.
@@ -21,7 +25,7 @@ var HORAS_PARA_TEMPORARIO = 48;
 var DIAS_PARA_APAGAR = 7;
 
 function cabecalhoPedidos() {
-  return ["ID Pedido", "Data Criação", "Status", "Nome Criança", "Faixa etária", "Gênero", "Pele", "Cabelo", "Personagem", "Tema", "Valor / Ensinamento", "Dedicatória", "Origem UTM", "Comprador", "E-mail", "Order Bump", "Valor Total"];
+  return ["ID_Pedido", "Data Criação", "Status", "Nome Criança", "Faixa etária", "Gênero", "Pele", "Cabelo", "Personagem", "Tema", "Valor / Ensinamento", "Dedicatória", "Origem UTM", "Comprador", "E-mail", "Order Bump", "Valor Total"];
 }
 
 function obterAba(ss, nome, cabecalho) {
@@ -96,7 +100,7 @@ function doPost(e) {
 function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var abaMetricas = ss.getSheetByName(ABA_METRICAS);
-  var abaPedidos = ss.getSheetByName(ABA_PEDIDOS) || ss.getSheets()[0];
+  var abaPedidos = ss.getSheetByName(ABA_PEDIDOS) || ss.getSheetByName("Pedidos - Livros") || ss.getSheets()[0];
   var metricas = abaMetricas ? abaMetricas.getDataRange().getValues().slice(1) : [];
   var pedidos = abaPedidos ? abaPedidos.getDataRange().getValues().slice(1) : [];
   var payload = {
@@ -108,14 +112,27 @@ function doGet(e) {
 }
 
 // Limpeza diária, roda por gatilho. Não apaga nada com Status Pago.
-// Pendente com mais de 48h: move para Temporarios.
-// Temporario com mais de 7 dias desde a criação: apaga.
+// Pendente, ou sem status, com mais de 48h: move para Temporarios.
+// Temporario com mais de 7 dias desde a criação: apaga, só se ainda estiver Pendente ou sem status.
+// Se um pedido em Temporarios virar Pago, a limpeza devolve ele para Pedidos-Livros.
 // Métrica com mais de 7 dias: apaga, para não ficar dado de quem não pagou para sempre.
 function limparPendentesAntigos() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var agora = new Date();
   var limiteTemporario = new Date(agora.getTime() - HORAS_PARA_TEMPORARIO * 60 * 60 * 1000);
   var limiteApagar = new Date(agora.getTime() - DIAS_PARA_APAGAR * 24 * 60 * 60 * 1000);
+
+  var abaTempPrimeiro = ss.getSheetByName(ABA_TEMPORARIOS);
+  var abaPedidosPrimeiro = ss.getSheetByName(ABA_PEDIDOS) || ss.getSheetByName("Pedidos - Livros");
+  if (abaTempPrimeiro && abaPedidosPrimeiro) {
+    var dadosResgate = abaTempPrimeiro.getDataRange().getValues();
+    for (var r = dadosResgate.length - 1; r >= 1; r--) {
+      if (String(dadosResgate[r][2] || "").trim() === "Pago") {
+        abaPedidosPrimeiro.appendRow(dadosResgate[r]);
+        abaTempPrimeiro.deleteRow(r + 1);
+      }
+    }
+  }
 
   var abaPedidos = ss.getSheetByName(ABA_PEDIDOS);
   if (abaPedidos) {
@@ -125,7 +142,7 @@ function limparPendentesAntigos() {
       var linha = dados[i];
       var status = String(linha[2] || "").trim();
       var dataCriacao = new Date(linha[1]);
-      if (status === "Pendente" && dataCriacao < limiteTemporario) {
+      if ((status === "Pendente" || status === "") && dataCriacao < limiteTemporario) {
         abaTemp.appendRow(linha);
         abaPedidos.deleteRow(i + 1);
       }
@@ -136,8 +153,9 @@ function limparPendentesAntigos() {
   if (abaTemp2) {
     var dadosTemp = abaTemp2.getDataRange().getValues();
     for (var j = dadosTemp.length - 1; j >= 1; j--) {
+      var statusTemp = String(dadosTemp[j][2] || "").trim();
       var dataTemp = new Date(dadosTemp[j][1]);
-      if (dataTemp < limiteApagar) abaTemp2.deleteRow(j + 1);
+      if (dataTemp < limiteApagar && statusTemp !== "Pago") abaTemp2.deleteRow(j + 1);
     }
   }
 
