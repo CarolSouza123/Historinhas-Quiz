@@ -131,7 +131,7 @@
 </div>
 <script>
   /* URLs reais, preencher quando estiverem prontas. Enquanto estiverem vazias, o site não redireciona para um link quebrado. */
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO3zrbDMjZXM0mZgY2Fd2ij0Y1nSLPAT10UwLOqRG6y0dtA2zz32HDVrp8H-48iSO2/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfm7sBhUFATQGhwo08LPKx23t3HhCXvzCaJXlowe6MGCmfPDU9EXY74NG2NhdTJ9XA/exec";
   const STRIPE_PAYMENT_LINK = "";
 
   /* Dados do quiz, objeto global pedido na especificação. */
@@ -150,11 +150,11 @@
   };
 
   const THEMES = {
-    natal: { label: "Magia de Natal no Polo Norte", card: "assets/temas/card_natal.webp", capa: "assets/capas/capa_natal.webp", titulo: "O Natal Mágico de" },
-    dinossauros: { label: "O Vale dos Dinossauros", card: "assets/temas/card_dino.webp", capa: "assets/capas/capa_dino.webp", titulo: "A Expedição Jurássica de" },
-    astronauta: { label: "Aventura nas Estrelas", card: "assets/temas/card_espaco.webp", capa: "assets/capas/capa_espaco.webp", titulo: "A Viagem Espacial de" },
-    unicornio: { label: "O Reino dos Unicórnios", card: "assets/temas/card_unicornio.webp", capa: "assets/capas/capa_unicornio.webp", titulo: "O Segredo dos Unicórnios e" },
-    reino_encantado: { label: "O Reino Encantado", card: "assets/temas/card_reino.webp", capa: "assets/capas/capa_reino.webp", titulo: "O Reino Encantado de" }
+    natal: { label: "Magia de Natal no Polo Norte", curto: "Natal", card: "assets/temas/card_natal.webp", capa: "assets/capas/capa_natal.webp", titulo: "O Natal Mágico de" },
+    dinossauros: { label: "O Vale dos Dinossauros", curto: "Dinossauros", card: "assets/temas/card_dino.webp", capa: "assets/capas/capa_dino.webp", titulo: "A Expedição Jurássica de" },
+    astronauta: { label: "Aventura nas Estrelas", curto: "Estrelas", card: "assets/temas/card_espaco.webp", capa: "assets/capas/capa_espaco.webp", titulo: "A Viagem Espacial de" },
+    unicornio: { label: "O Reino dos Unicórnios", curto: "Unicórnios", card: "assets/temas/card_unicornio.webp", capa: "assets/capas/capa_unicornio.webp", titulo: "O Segredo dos Unicórnios e" },
+    reino_encantado: { label: "O Reino Encantado", curto: "Reino Encantado", card: "assets/temas/card_reino.webp", capa: "assets/capas/capa_reino.webp", titulo: "O Reino Encantado de" }
   };
 
   const IDADES = [
@@ -235,7 +235,7 @@
     }
   }
 
-  function nomeExibicao() { return quizData.nome_crianca || "Pequeno Herói"; }
+  function nomeExibicao() { return quizData.nome_crianca || "Pequeno Leitor"; }
 
   function iniciarQuiz() {
     registrarEvento("inicio_quiz");
@@ -265,7 +265,7 @@
 
     if (currentQuizStepIndex === 0) {
       registrarEvento("quiz_step_nome");
-      titleEl.innerText = "Como se chama o pequeno herói da história?";
+      titleEl.innerText = "Como se chama o protagonista da historinha?";
       subEl.innerText = "O nome que vai brilhar na capa e em todas as páginas.";
       const input = document.createElement("input");
       input.type = "text"; input.maxLength = 15; input.placeholder = "Ex: Mateo"; input.value = quizData.nome_crianca || "";
@@ -411,11 +411,12 @@
       "Ciúme do irmão ou da irmã": "Nessa história, " + nome + " aprende a dividir o carinho...",
       "Orar todas as noites e confiar em Deus": "Nessa história, " + nome + " aprende a orar todas as noites e confiar em Deus..."
     }[quizData.desafio] || ("Nessa história, " + nome + " vive uma grande aventura...");
+    const temaCurto = (THEMES[quizData.tema] || THEMES.natal).curto;
     const textos = [
-      nome + " está entrando na história...",
+      "Criando a capa de " + temaCurto + "...",
       "Uma aventura de " + temaLabel + " espera por " + nome + "...",
       desafioFrase,
-      "A capa com o nome de " + nome + " já está quase pronta..."
+      "A dedicatória já está quase pronta..."
     ];
     const inicio = Date.now(); const duracao = 2500;
     function tick() {
