@@ -43,16 +43,17 @@
     .quiz-subtitle { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:22px; }
     .options-grid { display:grid; gap:12px; margin-bottom:24px; }
     .grid-2 { grid-template-columns:1fr 1fr; }
-    .card-option { border:2px solid var(--border); border-radius:var(--radius); padding:16px 12px; text-align:center; cursor:pointer; transition:all 0.2s; background:#FFF; display:flex; flex-direction:column; align-items:center; gap:8px; }
-    .card-option.selected { border-color:var(--brand-blue); background:#EEF2FF; }
+    .card-option { border:3px solid var(--border); border-radius:var(--radius); padding:16px 12px; text-align:center; cursor:pointer; transition:all 0.2s; background:#FFF; display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
+    .card-option.selected { border-color:#00A859; background:#ECFDF5; }
+    .check-badge { position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%; background:#00A859; color:#FFF; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; z-index:3; box-shadow:0 2px 6px rgba(0,0,0,0.25); }
     .card-option .option-label { font-size:14px; font-weight:700; color:#1E293B; }
     .swatch-row { display:flex; gap:16px; justify-content:center; margin-bottom:24px; flex-wrap:wrap; }
     .swatch-item { display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; background:none; border:none; padding:4px; }
     .swatch-circle { width:52px; height:52px; border-radius:50%; border:2px solid #E2E8F0; box-shadow:inset 0 0 0 2px rgba(255,255,255,0.4); }
     .swatch-item.selected .swatch-circle { outline:3px solid var(--brand-blue); outline-offset:4px; border-color:var(--brand-blue); }
     .swatch-label { font-size:13px; font-weight:700; color:#1E293B; }
-    .theme-card { position:relative; width:100%; aspect-ratio:16 / 9; border-radius:16px; overflow:hidden; cursor:pointer; border:2px solid var(--border); background:linear-gradient(135deg,#1E1B4B,#4338CA); text-align:left; padding:0; }
-    .theme-card.selected { border-color:var(--brand-blue); outline:3px solid var(--brand-blue); outline-offset:2px; }
+    .theme-card { position:relative; width:100%; aspect-ratio:16 / 9; border-radius:16px; overflow:hidden; cursor:pointer; border:3px solid var(--border); background:linear-gradient(135deg,#1E1B4B,#4338CA); text-align:left; padding:0; }
+    .theme-card.selected { border-color:#00A859; }
     .theme-card img { width:100%; height:100%; object-fit:cover; display:block; }
     .theme-card .theme-gradient { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.15) 55%,rgba(0,0,0,0) 100%); }
     .theme-card .theme-title { position:absolute; left:16px; right:16px; bottom:14px; color:#FFF; font-family:'Quicksand',sans-serif; font-size:18px; font-weight:800; text-shadow:0 2px 8px rgba(0,0,0,0.5); }
@@ -62,8 +63,8 @@
     .idade-grid .card-option { padding:12px 4px; }
     .idade-grid .option-label { font-size:13px; }
     .personagem-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
-    .personagem-card { border:2px solid var(--border); border-radius:var(--radius); overflow:hidden; cursor:pointer; background:#FFF; padding:6px; transition:all 0.2s; }
-    .personagem-card.selected { border-color:var(--brand-blue); background:#EEF2FF; outline:3px solid var(--brand-blue); outline-offset:2px; }
+    .personagem-card { border:3px solid var(--border); border-radius:var(--radius); overflow:hidden; cursor:pointer; background:#FFF; padding:6px; transition:all 0.2s; position:relative; }
+    .personagem-card.selected { border-color:#00A859; background:#ECFDF5; }
     .personagem-card img { width:100%; aspect-ratio:4 / 5; object-fit:contain; display:block; border-radius:12px; background:#FFF7ED; }
     .preview-bonus { font-size:13px; font-weight:700; color:#065F46; background:#ECFDF5; border:1px solid #A7F3D0; border-radius:12px; padding:12px 14px; margin-bottom:14px; text-align:center; }
     input[type="text"], input[type="email"], textarea { width:100%; padding:16px; border-radius:14px; border:2px solid var(--border); font-size:16px; outline:none; margin-bottom:20px; }
@@ -315,26 +316,32 @@
       ];
       opcoes.forEach(function (op) {
         const card = document.createElement("div"); card.className = "card-option" + (quizData.genero === op.valor ? " selected" : "");
-        card.innerHTML = op.svg + '<div class="option-label">' + op.label + '</div>';
-        card.onclick = function () { quizData.genero = op.valor; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        card.innerHTML = (quizData.genero === op.valor ? '<span class="check-badge">✓</span>' : '') + op.svg + '<div class="option-label">' + op.label + '</div>';
+        card.onclick = function () { quizData.genero = op.valor; salvarQuizData(); renderizarEtapa(); };
         grid.appendChild(card);
       });
-      area.appendChild(grid);
+      const btnGenero = document.createElement("button");
+      btnGenero.className = "btn-cta"; btnGenero.innerText = "Continuar"; btnGenero.disabled = !quizData.genero;
+      btnGenero.onclick = function () { if (!quizData.genero) return; salvarQuizData(); avancarPasso(); };
+      area.appendChild(grid); area.appendChild(btnGenero);
     } else if (currentQuizStepIndex === 2) {
       registrarEvento("quiz_step_personagem");
-      titleEl.innerText = quizData.genero === "menina" ? "Escolha qual combina mais com a sua pequena." : "Escolha qual combina mais com o seu pequeno.";
+      titleEl.innerText = "Escolha qual combina mais com " + nome + ".";
       const lista = PERSONAGENS[quizData.genero] || PERSONAGENS.menino;
       const grid = document.createElement("div"); grid.className = "personagem-grid";
       lista.forEach(function (op) {
         const card = document.createElement("div"); card.className = "personagem-card" + (quizData.personagem === op.valor ? " selected" : "");
-        card.innerHTML = '<img src="' + op.img + '" alt="Personagem" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
+        card.innerHTML = (quizData.personagem === op.valor ? '<span class="check-badge">✓</span>' : '') + '<img src="' + op.img + '" alt="Personagem" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">';
         card.onclick = function () {
           quizData.personagem = op.valor; quizData.pele = op.pele; quizData.cabelo = op.cabelo;
-          salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250);
+          salvarQuizData(); renderizarEtapa();
         };
         grid.appendChild(card);
       });
-      area.appendChild(grid);
+      const btnPersonagem = document.createElement("button");
+      btnPersonagem.className = "btn-cta"; btnPersonagem.innerText = "Continuar"; btnPersonagem.disabled = !quizData.personagem;
+      btnPersonagem.onclick = function () { if (!quizData.personagem) return; salvarQuizData(); avancarPasso(); };
+      area.appendChild(grid); area.appendChild(btnPersonagem);
     } else if (currentQuizStepIndex === 3) {
       registrarEvento("quiz_step_tema");
       titleEl.innerText = "Em qual mundo mágico " + nome + " vai entrar?";
@@ -342,11 +349,14 @@
       Object.keys(THEMES).forEach(function (chave) {
         const tema = THEMES[chave];
         const card = document.createElement("div"); card.className = "theme-card" + (quizData.tema === chave ? " selected" : "");
-        card.innerHTML = '<img src="' + tema.card + '" alt="' + tema.label + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' + '<div class="theme-gradient"></div>' + (chave === "natal" ? '<span class="theme-tag">Edição Especial de Natal</span>' : '') + '<div class="theme-title">' + tema.label + '</div>';
-        card.onclick = function () { quizData.tema = chave; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        card.innerHTML = (quizData.tema === chave ? '<span class="check-badge">✓</span>' : '') + '<img src="' + tema.card + '" alt="' + tema.label + '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">' + '<div class="theme-gradient"></div>' + (chave === "natal" ? '<span class="theme-tag">Edição Especial de Natal</span>' : '') + '<div class="theme-title">' + tema.label + '</div>';
+        card.onclick = function () { quizData.tema = chave; salvarQuizData(); renderizarEtapa(); };
         lista.appendChild(card);
       });
-      area.appendChild(lista);
+      const btnTema = document.createElement("button");
+      btnTema.className = "btn-cta"; btnTema.innerText = "Continuar"; btnTema.disabled = !quizData.tema;
+      btnTema.onclick = function () { if (!quizData.tema) return; salvarQuizData(); avancarPasso(); };
+      area.appendChild(lista); area.appendChild(btnTema);
     } else if (currentQuizStepIndex === 4) {
       registrarEvento("quiz_step_desafio");
       titleEl.innerText = "Vamos lidar com uma dificuldade que " + nome + " tem na historinha";
@@ -354,11 +364,14 @@
       const lista = document.createElement("div"); lista.className = "options-grid";
       DESAFIOS.forEach(function (op) {
         const card = document.createElement("div"); card.className = "card-option" + (quizData.desafio === op.valor ? " selected" : "");
-        card.innerHTML = '<div class="option-label">' + op.label + '</div>';
-        card.onclick = function () { quizData.desafio = op.valor; salvarQuizData(); renderizarEtapa(); setTimeout(avancarPasso, 250); };
+        card.innerHTML = (quizData.desafio === op.valor ? '<span class="check-badge">✓</span>' : '') + '<div class="option-label">' + op.label + '</div>';
+        card.onclick = function () { quizData.desafio = op.valor; salvarQuizData(); renderizarEtapa(); };
         lista.appendChild(card);
       });
-      area.appendChild(lista);
+      const btnDesafio = document.createElement("button");
+      btnDesafio.className = "btn-cta"; btnDesafio.innerText = "Continuar"; btnDesafio.disabled = !quizData.desafio;
+      btnDesafio.onclick = function () { if (!quizData.desafio) return; salvarQuizData(); avancarPasso(); };
+      area.appendChild(lista); area.appendChild(btnDesafio);
     } else if (currentQuizStepIndex === 5) {
       registrarEvento("quiz_step_dedicatoria");
       titleEl.innerText = "Deixe uma dedicatória mágica";
